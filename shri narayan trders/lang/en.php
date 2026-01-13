@@ -1,0 +1,157 @@
+<?php
+/*
+ * Shri Narayan Traders - English Language File
+ *
+ * This file contains all the English text strings for the website.
+ * This makes it easy to manage and translate the content.
+ *
+ * Array keys are consistent across all language files.
+ */
+
+$lang = [
+    // General
+    'site_name' => 'Shri Narayan Traders',
+    'search_placeholder' => 'Search for products...', 
+    'search_button' => 'Search',
+    'home' => 'Home',
+    'products' => 'Products',
+    'cart' => 'Cart',
+    'login' => 'Login',
+    'register' => 'Register',
+    'logout' => 'Logout',
+    'admin_panel' => 'Admin Panel',
+    'all_categories' => 'All Categories',
+    'customer_support' => 'Customer Support',
+    'my_wishlist' => 'My Wishlist',
+    'added_to_wishlist' => 'Added to Wishlist!',
+    'removed_from_wishlist' => 'Removed from Wishlist!',
+    'customer_reviews' => 'Customer Reviews',
+    'your_review' => 'Your Review',
+    'submit_review' => 'Submit Review',
+    'review_submitted_successfully' => 'Review submitted successfully!',
+    'review_already_submitted' => 'You have already submitted a review for this product.',
+    'must_purchase_to_review' => 'You must purchase this product to submit a review.',
+    'rate_product' => 'Rate this product:',
+    'rating_1_star' => '1 Star',
+    'rating_2_stars' => '2 Stars',
+    'rating_3_stars' => '3 Stars',
+    'rating_4_stars' => '4 Stars',
+    'rating_5_stars' => '5 Stars',
+
+    // Language Switcher
+    'lang_switcher_en' => '🇬🇧 English',
+    'lang_switcher_hi' => '🇮🇳 Hindi',
+
+    // Product Card
+    'add_to_cart' => 'Add to Cart',
+    'in_stock' => 'In Stock',
+    'out_of_stock' => 'Out of Stock',
+    'quantity_per_unit' => 'per unit',
+    'price_per_unit' => 'Price',
+
+    // Cart Page
+    'shopping_cart' => 'Shopping Cart',
+    'product' => 'Product',
+    'price' => 'Price',
+    'quantity' => 'Quantity',
+    'total' => 'Total',
+    'remove' => 'Remove',
+    'cart_is_empty' => 'Your shopping cart is empty.',
+    'continue_shopping' => 'Continue Shopping',
+    'proceed_to_checkout' => 'Proceed to Checkout',
+    'subtotal' => 'Subtotal',
+
+    // Checkout Page
+    'checkout' => 'Checkout',
+    'shipping_address' => 'Shipping Address',
+    'billing_address' => 'Billing Address',
+    'same_as_shipping' => 'Same as Shipping Address',
+    'full_name' => 'Full Name',
+    'email_address' => 'Email Address',
+    'phone_number' => 'Phone Number',
+    'address' => 'Address',
+    'city' => 'City',
+    'state' => 'State',
+    'zip_code' => 'ZIP Code',
+    'payment_method' => 'Payment Method',
+    'credit_card_details' => 'Credit Card Details',
+    'card_type' => 'Card Type',
+    'select_card_type' => 'Select Card Type',
+    'visa' => 'Visa',
+    'mastercard' => 'Mastercard',
+    'rupay' => 'Rupay',
+    'card_number' => 'Card Number',
+    'expiry_month' => 'Expiry Month',
+    'expiry_year' => 'Expiry Year',
+    'cvv' => 'CVV',
+    'place_order' => 'Place Order',
+
+    // Success Page
+    'payment_successful' => 'Payment Successful!',
+    'order_placed_message' => 'Your order has been placed successfully. Thank you for shopping with us!',
+    'order_summary' => 'Order Summary',
+    'invoice_preview' => 'Invoice Preview',
+
+    // Login & Register
+    'username' => 'Username',
+    'password' => 'Password',
+    'confirm_password' => 'Confirm Password',
+    'already_have_account' => 'Already have an account? Login here.',
+    'dont_have_account' => 'Don\'t have an account? Register here.',
+    'login_to_account' => 'Login to your Account',
+    'create_new_account' => 'Create a New Account',
+
+    // Admin
+    'admin_login' => 'Admin Login',
+    'dashboard' => 'Dashboard',
+    'admin_setup_title' => 'Admin Account Setup',
+    'admin_setup_instructions' => 'Welcome! No admin account found. Please create the first admin account to get started.',
+    'create_admin_button' => 'Create Admin',
+    'add_product' => 'Add Product',
+    'edit_product' => 'Edit Product',
+    'delete_product' => 'Delete Product',
+    'product_name' => 'Product Name',
+    'product_type' => 'Product Type (Category)',
+    'product_price' => 'Product Price',
+    'units_in_stock' => 'Units In Stock',
+    'product_image' => 'Product Image',
+    'upload_image' => 'Upload Image',
+    'image_preview' => 'Image Preview',
+    'save_product' => 'Save Product',
+    'orders' => 'Orders',
+    'customers' => 'Customers',
+    'reports' => 'Reports',
+    'order_number' => 'Order #',
+    'order_date' => 'Order Date',
+    'customer_name' => 'Customer Name',
+    'total_amount' => 'Total Amount',
+    'shipping_status' => 'Shipping Status',
+    'action' => 'Action',
+
+    // Messages & Errors
+    'product_added_to_cart' => 'Product added to cart successfully!',
+    'product_removed_from_cart' => 'Product removed from cart.',
+    'cart_updated' => 'Cart updated successfully.',
+    'invalid_credentials' => 'Invalid username or password.',
+    'passwords_do_not_match' => 'Passwords do not match.',
+    'email_already_exists' => 'An account with this email already exists.',
+    'registration_successful' => 'Registration successful! You can now login.',
+    'forgot_password' => 'Forgot Password?',
+    'send_reset_link' => 'Send Password Reset Link',
+    'password_reset_link_sent' => 'A password reset link will be shown on screen (simulation).',
+    'reset_your_password' => 'Reset Your Password',
+    'enter_new_password' => 'Enter New Password',
+    'password_updated_successfully' => 'Password updated successfully! You can now login.',
+    'invalid_or_expired_token' => 'This token is invalid or has expired.',
+    'email_not_found' => 'No account found with that email address.',
+    'mobile_number' => 'Mobile Number',
+    'send_otp' => 'Send OTP',
+    'otp_sent' => 'An OTP has been displayed on screen.',
+    'enter_otp' => 'Enter OTP',
+    'verify_otp' => 'Verify OTP',
+    'invalid_otp' => 'Invalid OTP. Please try again.',
+    'mobile_already_registered' => 'This mobile number is already registered.',
+    'all_fields_required' => 'All fields are required.',
+    'please_fix_errors' => 'Please fix the errors below.',
+];
+?>

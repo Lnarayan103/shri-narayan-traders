@@ -1,0 +1,245 @@
+/*
+ * Shri Narayan Traders - Premium & Colorful Stylesheet
+ * Version 2.0
+ */
+
+/* --- 1. CSS Variables for Easy Theming --- */
+:root {
+    --primary-color: #008080; /* Teal */
+    --secondary-color: #2c3e50; /* Dark Blue/Charcoal */
+    --accent-color: #e67e22; /* Vibrant Orange */
+    --accent-color-dark: #d35400;
+    --light-bg: #fdfdfd;
+    --white-bg: #ffffff;
+    --dark-text: #2c3e50;
+    --body-text: #596168;
+    --border-color: #eaeaea;
+    --body-font: 'Poppins', 'Noto Sans Devanagari', sans-serif;
+    --border-radius: 0.5rem;
+    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.09);
+}
+
+/* --- 2. General & Typography --- */
+body {
+    font-family: var(--body-font);
+    background-color: var(--light-bg);
+    color: var(--body-text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+    flex-grow: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+/* --- 3. Header & Navbar --- */
+header.shadow-sm {
+    background-color: var(--white-bg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand .header-logo {
+    height: 50px;
+    width: auto;
+    border-radius: 0.5rem;
+}
+
+/* --- 4. Hero Section --- */
+.hero-section {
+    padding: 6rem 0;
+    text-align: center;
+    position: relative;
+    color: var(--white-bg);
+    /* Placeholder background: A premium, dark marble-like gradient */
+    background-color: #2c3e50;
+    background-image: linear-gradient(315deg, #2c3e50 0%, #000000 74%);
+
+    /* Aap yahan apni image daal sakte hain: */
+    /* background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('YOUR_IMAGE_URL_HERE'); */
+    background-size: cover;
+    background-position: center center;
+    border-bottom: 5px solid var(--accent-color);
+}
+
+@keyframes slow-pan {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: twinkle 40s linear infinite; /* Subtle "star" like feel */
+}
+
+@keyframes twinkle {
+    from { background-position: 0 0; }
+    to { background-position: 1000px 500px; }
+}
+
+.hero-section .display-4 {
+    font-weight: 700;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+.hero-section .lead {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* --- 5. Forms & Buttons (with new feel) --- */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: var(--white-bg);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--accent-color-dark);
+    color: var(--white-bg);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(230, 126, 34, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0px) scale(0.98);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.form-control {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 128, 128, 0.15);
+}
+
+/* --- 6. Product Card --- */
+.product-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    background-color: var(--white-bg);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--box-shadow);
+    border-color: var(--primary-color);
+}
+
+.product-card .card-img-top {
+    height: 220px;
+    object-fit: contain;
+    padding: 1rem;
+}
+
+.product-card .card-body {
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.product-card .card-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+}
+
+.product-card .card-text.text-muted {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.product-card .card-subtitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* --- 7. Auth Page Styles (Login, Register) --- */
+body.auth-page {
+    background: var(--light-bg);
+}
+
+.auth-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--white-bg);
+    box-shadow: var(--box-shadow);
+}
+
+/* --- 8. Footer --- */
+footer.bg-dark {
+    background-color: var(--secondary-color) !important;
+    color: #a0a0a0;
+    padding: 3rem 0;
+    margin-top: 4rem;
+}
+footer.bg-dark a {
+    color: #e0e0e0;
+}
+
+/* Other styles from previous version, adapted */
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.page-link {
+    color: var(--primary-color);
+}
+.cart-count {
+    background-color: var(--accent-color);
+    color: var(--white-bg);
+}
+html[lang="hi"] body {
+    font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+html[lang="hi"] .navbar-brand,
+html[lang="hi"] .card-title {
+    font-weight: 700;
+}
