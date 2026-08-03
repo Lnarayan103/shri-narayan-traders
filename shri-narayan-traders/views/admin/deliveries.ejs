@@ -1,0 +1,52 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between mb-4"><h4 class="mb-0">Deliveries</h4>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#dlModal">+ Schedule Delivery</button></div>
+  <div class="admin-card table-responsive"><table class="table table-hover mb-0 align-middle">
+    <thead class="table-light"><tr><th>ID</th><th>Customer</th><th>Address</th><th>Boy</th><th>Charges</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <% (deliveries||[]).forEach(d => { %>
+      <tr>
+        <td class="fw-bold"><%= d.deliveryId %></td>
+        <td><div><%= d.customerName %></div><div class="small text-muted"><%= d.customerPhone||'' %></div></td>
+        <td class="small" style="max-width:180px"><%= d.address %></td>
+        <td><%= d.deliveryBoy||'—' %></td>
+        <td>₹<%= (d.charges||0).toLocaleString('en-IN') %></td>
+        <td>
+          <select class="form-select form-select-sm" style="width:auto" onchange="setDl('<%= d._id %>', this.value)">
+            <% ['scheduled','out_for_delivery','delivered','failed','returned'].forEach(s => { %>
+              <option value="<%= s %>" <%= d.status===s?'selected':'' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </td>
+        <td><button class="btn btn-sm btn-outline-danger" onclick="del('/api/deliveries/<%= d._id %>')">Del</button></td>
+      </tr>
+      <% }) %>
+      <% if(!(deliveries||[]).length){ %><tr><td colspan="7" class="text-center text-muted py-4">No deliveries</td></tr><% } %>
+    </tbody></table></div>
+</div>
+<div class="modal fade" id="dlModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Schedule Delivery</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input id="dOrder" class="form-control mb-2" placeholder="Order ID (optional)">
+    <input id="dCust" class="form-control mb-2" placeholder="Customer Name *">
+    <input id="dPhone" class="form-control mb-2" placeholder="Phone">
+    <textarea id="dAddr" class="form-control mb-2" placeholder="Delivery Address *"></textarea>
+    <input id="dBoy" class="form-control mb-2" placeholder="Delivery Boy Name">
+    <input id="dCharges" type="number" class="form-control mb-2" placeholder="Charges" value="0">
+    <input id="dDate" type="date" class="form-control">
+  </div>
+  <div class="modal-footer"><button class="btn btn-primary" onclick="saveDl()">Schedule</button></div>
+</div></div></div>
+<script>
+async function saveDl(){
+  const body={orderId:dOrder.value,customerName:dCust.value,customerPhone:dPhone.value,address:dAddr.value,deliveryBoy:dBoy.value,charges:+dCharges.value,scheduledDate:dDate.value};
+  const r=await fetch('/api/deliveries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok) location.reload(); else alert('Failed');
+}
+async function setDl(id,status){
+  await fetch('/api/deliveries/'+id+'/status',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+}
+async function del(url){ if(confirm('Delete?')){ await fetch(url,{method:'DELETE'}); location.reload(); }}
+</script>
+<%- include('../partials/admin-footer') %>

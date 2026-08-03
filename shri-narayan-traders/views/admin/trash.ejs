@@ -1,0 +1,40 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <h4 class="mb-1">Recycle Bin</h4>
+  <p class="text-muted small mb-4">Soft-deleted records (restore within ~30 days).</p>
+  <% const sections = [
+    { key: 'products', title: 'Products', items: products||[], label: p => p.name },
+    { key: 'orders', title: 'Orders', items: orders||[], label: o => o.orderId || o._id },
+    { key: 'quotations', title: 'Quotations', items: quotations||[], label: q => (q.quoteId||'') + ' — ' + (q.customerName||'') },
+    { key: 'suppliers', title: 'Suppliers', items: suppliers||[], label: s => s.name },
+    { key: 'purchases', title: 'Purchases', items: purchases||[], label: p => p.purchaseId || p._id },
+    { key: 'expenses', title: 'Expenses', items: expenses||[], label: e => (e.category||'') + ' ₹' + (e.amount||0) },
+    { key: 'jobworks', title: 'Job Works', items: jobworks||[], label: j => (j.jobId||'') + ' — ' + (j.title||'') },
+    { key: 'deliveries', title: 'Deliveries', items: deliveries||[], label: d => d.deliveryId || d._id }
+  ]; %>
+  <% sections.forEach(sec => { %>
+  <div class="admin-card mb-3">
+    <div class="p-3 border-bottom fw-bold"><%= sec.title %> (<%= sec.items.length %>)</div>
+    <div class="table-responsive"><table class="table table-sm mb-0">
+      <thead><tr><th>Item</th><th>Deleted At</th><th></th></tr></thead>
+      <tbody>
+        <% sec.items.forEach(it => { %>
+        <tr>
+          <td><%= sec.label(it) %></td>
+          <td class="small"><%= it.deletedAt ? new Date(it.deletedAt).toLocaleString('en-IN') : '—' %></td>
+          <td><button class="btn btn-sm btn-success" onclick="restore('<%= sec.key %>','<%= it._id %>')">Restore</button></td>
+        </tr>
+        <% }) %>
+        <% if (!sec.items.length) { %><tr><td colspan="3" class="text-muted text-center py-3">Empty</td></tr><% } %>
+      </tbody>
+    </table></div>
+  </div>
+  <% }) %>
+</div>
+<script>
+async function restore(collection, id) {
+  const res = await fetch(`/api/admin/trash/${collection}/${id}/restore`, { method: 'POST' });
+  if (res.ok) location.reload(); else alert('Restore failed');
+}
+</script>
+<%- include('../partials/admin-footer') %>

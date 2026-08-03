@@ -1,0 +1,87 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Customer Directory" %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">Customer Directory</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Google-verified customers with profile details</p>
+    </div>
+    <span class="badge bg-primary"><%= (customers && customers.length) || 0 %> customers</span>
+  </div>
+  <div class="admin-card">
+    <div style="padding:1rem 1.25rem;">
+      <input type="text" class="form-control form-control-sm" placeholder="Search name, email, phone..." style="max-width:320px;"
+        oninput="const q=this.value.toLowerCase();document.querySelectorAll('#custTable tbody tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none')" />
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" id="custTable">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Photo</th>
+            <th>Name / Email</th>
+            <th>Mobile</th>
+            <th>Address</th>
+            <th>Orders</th><th>Spent</th><th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (customers && customers.length > 0) { %>
+            <% customers.forEach((c, i) => { %>
+            <tr>
+              <td class="text-muted small"><%= i + 1 %></td>
+              <td>
+                <% if (c.picture) { %>
+                  <img src="<%= c.picture %>" alt="" width="40" height="40" class="rounded-circle" referrerpolicy="no-referrer" style="object-fit:cover;">
+                <% } else { %>
+                  <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-size:14px;font-weight:700;">
+                    <%= ((c.name || c.email || 'C') + '').charAt(0).toUpperCase() %>
+                  </div>
+                <% } %>
+              </td>
+              <td>
+                <div class="fw-bold" style="font-size:13.5px;"><%= c.name || '—' %></div>
+                <div class="small text-muted"><%= c.email || '' %></div>
+                <% if (c.googleId) { %><span class="badge bg-success-subtle text-success border border-success" style="font-size:10px;">Google</span><% } %>
+              </td>
+              <td>
+                <% if (c.phone) { %>
+                  <a href="tel:<%= c.phone %>" class="text-decoration-none fw-semibold"><%= c.phone %></a>
+                <% } else { %>
+                  <span class="text-muted small">Not set</span>
+                <% } %>
+              </td>
+              <td style="max-width:220px;font-size:12px;">
+                <%= c.address || '—' %>
+              </td>
+              <td class="fw-bold"><%= c.totalOrders || 0 %></td>
+              <td style="color:#c9922a;font-weight:700;">₹<%= (c.totalSpent||0).toLocaleString('en-IN') %></td>
+              <td class="small"><%= c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN') : '—' %></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <% if (c.phone) { %>
+                    <a href="tel:<%= c.phone %>" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-phone"></i></a>
+                    <a href="https://wa.me/91<%= String(c.phone).replace(/\D/g,'') %>" target="_blank" class="btn btn-sm btn-outline-success"><i class="fa-brands fa-whatsapp"></i></a>
+                  <% } %>
+                  <% if (c.email) { %>
+                    <a href="mailto:<%= c.email %>" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-envelope"></i></a>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="9" class="text-center py-5 text-muted">
+                <i class="fa-solid fa-users fa-3x mb-3 d-block opacity-25"></i>
+                No Google customers yet. When users sign in with Google, they will appear here.
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../partials/admin-footer') %>

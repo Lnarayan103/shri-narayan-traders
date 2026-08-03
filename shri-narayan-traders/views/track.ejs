@@ -1,0 +1,199 @@
+<%- include('partials/header') %>
+<% pageTitle = "Track Your Order" %>
+
+<section style="background:var(--navy-grad);border-bottom:3px solid var(--gold);padding:3.5rem 0;">
+  <div class="container text-center text-white fade-up">
+    <span class="section-tag text-warning">Order Status</span>
+    <h1 class="font-playfair fw-bold mt-1 mb-2">Track Your Order</h1>
+    <p style="color:rgba(255,255,255,.65);">Enter your Order ID to get real-time status updates.</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <!-- Search Box -->
+      <div class="track-search-card fade-up">
+        <div class="track-icon-big"><i class="fa-solid fa-location-crosshairs"></i></div>
+        <h4 class="font-playfair mb-1 text-center">Enter Order ID</h4>
+        <p class="text-muted text-center mb-4" style="font-size:13.5px;">Your Order ID was sent via SMS/WhatsApp when your order was confirmed. Format: <code>SNT-YYYYMMDD-XXXX</code></p>
+        <div class="d-flex gap-2">
+          <input type="text" id="orderIdInput" class="form-input-snt flex-grow-1" placeholder="e.g. SNT-20250115-4821" style="font-family:monospace;font-size:15px;letter-spacing:.05em;" />
+          <button onclick="trackOrder()" class="btn-hero-primary px-4" style="border-radius:10px;white-space:nowrap"><i class="fa-solid fa-magnifying-glass me-1"></i> Track</button>
+        </div>
+        <p class="text-center mt-3 mb-0" style="font-size:12px;color:var(--text-muted)">Can't find your Order ID? <a href="/contact" style="color:var(--gold-dark)">Contact us</a></p>
+      </div>
+
+      <!-- Result Box -->
+      <div id="trackResult" class="mt-4" style="display:none;"></div>
+
+      <!-- Info Cards -->
+      <div class="row g-3 mt-2 fade-up fade-up-d2">
+        <div class="col-4 text-center">
+          <div class="track-info-item"><i class="fa-solid fa-clock-rotate-left text-warning fa-lg mb-2 d-block"></i><span>Order confirmed in<br><strong>30 minutes</strong></span></div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="track-info-item"><i class="fa-solid fa-truck-fast text-warning fa-lg mb-2 d-block"></i><span>Local delivery<br><strong>Same/Next day</strong></span></div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="track-info-item"><i class="fa-brands fa-whatsapp text-success fa-lg mb-2 d-block"></i><span>Updates via<br><strong>WhatsApp & SMS</strong></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.track-search-card { 
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(201,146,42,.12);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.track-search-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.track-icon-big { 
+  width: 64px;
+  height: 64px;
+  background: var(--gold-grad);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: var(--navy-deep);
+  margin: 0 auto 1.25rem;
+  box-shadow: 0 8px 20px rgba(201,146,42,0.3);
+}
+.track-result-card { background:#fff;border-radius:16px;padding:2rem;box-shadow:var(--shadow-md);border:1px solid rgba(201,146,42,.15); }
+.order-status-timeline { display:flex;flex-direction:column;gap:0;margin-top:1.5rem; }
+.timeline-step { display:flex;gap:1.25rem;align-items:flex-start;position:relative;padding-bottom:1.5rem; }
+.timeline-step:last-child { padding-bottom:0; }
+.ts-dot { width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;position:relative;z-index:1; transition: all var(--dur) var(--ease); }
+.ts-dot.done    { background:var(--gold-grad);color:var(--navy-deep); box-shadow: 0 4px 10px rgba(201,146,42,0.25); }
+.ts-dot.current { 
+  background: var(--navy-grad);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(0,31,77,.15); 
+  animation: pulse-current-step 2s infinite ease-in-out;
+}
+@keyframes pulse-current-step {
+  0%, 100% { box-shadow: 0 0 0 0px rgba(0, 31, 77, 0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 31, 77, 0); }
+}
+.ts-dot.pending { background:#f1f5f9;color:#94a3b8; border: 1px solid #e2e8f0; }
+.timeline-step:not(:last-child)::before { content:'';position:absolute;left:16px;top:34px;width:2px;height:calc(100% - 34px);background:#e2e8f0;z-index:0; }
+.timeline-step.done-step::before { background: var(--gold-grad); }
+.ts-info { flex:1; }
+.ts-title { font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px; }
+.ts-time  { font-size:12px;color:var(--text-muted); }
+.track-info-item { 
+  background:#fff;
+  border-radius:12px;
+  padding:1.25rem .75rem;
+  font-size:12.5px;
+  color:var(--text-muted);
+  line-height:1.5;
+  box-shadow:var(--shadow-sm);
+  border:1px solid rgba(201,146,42,.08);
+  height:100%;
+  transition: all var(--dur) var(--ease);
+}
+.track-info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(201,146,42,0.2);
+}
+.track-info-item strong { color:var(--navy); }
+.form-input-snt {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: all var(--dur) var(--ease);
+}
+.form-input-snt:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3.5px rgba(201,146,42,0.18);
+}
+</style>
+
+<script>
+async function trackOrder() {
+  const id = document.getElementById('orderIdInput').value.trim();
+  const resultDiv = document.getElementById('trackResult');
+  if (!id) { resultDiv.style.display='block'; resultDiv.innerHTML='<div class="alert" style="background:rgba(220,38,38,.08);border:1px solid #dc2626;color:#dc2626;border-radius:10px;padding:12px 16px;font-size:13.5px;"><i class="fa-solid fa-triangle-exclamation me-2"></i>Please enter a valid Order ID.</div>'; return; }
+  resultDiv.style.display='block';
+  resultDiv.innerHTML='<div class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--gold)"></i><p class="mt-2 text-muted">Looking up your order...</p></div>';
+  try {
+    const res = await fetch('/api/orders/track/' + encodeURIComponent(id));
+    const data = await res.json();
+    if (!res.ok || !data.order) throw new Error(data.message || 'Not found');
+    const o = data.order;
+    const steps = [
+      {title:'Order Placed',icon:'fa-clipboard-check',done:true},
+      {title:'Order Confirmed',icon:'fa-circle-check',done:['confirmed','processing','shipped','delivered','repair','replacement','exchange'].includes(o.status)},
+      {title:'Processing / Packing',icon:'fa-box',done:['processing','shipped','delivered','repair','replacement','exchange'].includes(o.status)},
+      {title:'Shipped / Out for Delivery',icon:'fa-truck',done:['shipped','delivered','repair','replacement','exchange'].includes(o.status)},
+      {title:'Delivered',icon:'fa-house-circle-check',done:['delivered','repair','replacement','exchange'].includes(o.status)},
+    ];
+    if (['repair','replacement','exchange'].includes(o.status)) {
+      let stepTitle = 'Under Service';
+      let stepIcon = 'fa-screwdriver-wrench';
+      if (o.status === 'repair') { stepTitle = 'Under Repair'; stepIcon = 'fa-wrench'; }
+      if (o.status === 'replacement') { stepTitle = 'Under Replacement'; stepIcon = 'fa-arrows-rotate'; }
+      if (o.status === 'exchange') { stepTitle = 'Under Exchange'; stepIcon = 'fa-right-left'; }
+      steps.push({title:stepTitle,icon:stepIcon,done:true});
+    }
+    const statusColor = {pending:'#f59e0b',confirmed:'#3b82f6',processing:'#8b5cf6',shipped:'#06b6d4',delivered:'#16a34a',cancelled:'#dc2626',repair:'#eab308',replacement:'#06b6d4',exchange:'#a855f7'}[o.status] || '#64748b';
+    resultDiv.innerHTML = `
+      <div class="track-result-card">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+          <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Order ID</div><div style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--navy)">${o.orderId}</div></div>
+          <span style="background:${statusColor}22;color:${statusColor};border:1px solid ${statusColor};padding:6px 16px;border-radius:30px;font-size:12px;font-weight:700;text-transform:capitalize;">${o.status.toUpperCase()}</span>
+        </div>
+        <div class="row g-3 mb-3" style="font-size:13.5px;">
+          <div class="col-6"><span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;">Customer</span>${o.customerName || '—'}</div>
+          <div class="col-6"><span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;">Order Date</span>${new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div>
+          <div class="col-6"><span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;">Total Amount</span>₹${(o.totalAmount||0).toLocaleString('en-IN')}</div>
+          <div class="col-6"><span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;">Payment</span>${o.paymentStatus||'—'}</div>
+        </div>
+        ${(String(o.paymentStatus||'').toLowerCase() !== 'paid') ? `
+        <a href="/payment?orderId=${encodeURIComponent(o.orderId)}" class="btn w-100 fw-bold mb-3" style="background:#001f4d;color:#fff;">
+          <i class="fa-solid fa-mobile-screen-button me-2"></i> Pay ₹${(o.totalAmount||0).toLocaleString('en-IN')} via UPI
+        </a>` : ''}
+        
+        <!-- Items details list -->
+        <div class="mb-4 p-3 rounded-3" style="background:#f8fafc; border:1px solid #e2e8f0;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:8px;"><i class="fa-solid fa-list me-1"></i>Items List</div>
+          <div class="d-flex flex-column gap-2">
+            ${o.items.map(item => `
+              <div class="d-flex justify-content-between align-items-center" style="font-size:13px;">
+                <div>
+                  <span class="fw-bold text-dark">${item.name}</span>
+                  <span class="text-muted text-xs ms-1">x${item.qty}</span>
+                </div>
+                <span class="fw-bold text-secondary">₹${((item.price || item.regularPrice || 0) * item.qty).toLocaleString('en-IN')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="order-status-timeline">
+          ${steps.map((s,i)=>{const isCurrent=s.done&&(i===steps.length-1||!steps[i+1]?.done);return `<div class="timeline-step ${s.done?'done-step':''}"><div class="ts-dot ${s.done?(isCurrent?'current':'done'):'pending'}"><i class="fa-solid ${s.icon}"></i></div><div class="ts-info"><div class="ts-title">${s.title}</div><div class="ts-time">${s.done?(isCurrent?'Current Status':'Completed'):'Pending'}</div></div></div>`}).join('')}
+        </div>
+        ${o.notes?`<div class="mt-3 p-3 rounded-3" style="background:rgba(201,146,42,.06);border:1px solid rgba(201,146,42,.15);font-size:13px;"><i class="fa-solid fa-circle-info me-2 text-warning"></i>${o.notes}</div>`:''}
+      </div>`;
+  } catch(err) {
+    resultDiv.innerHTML=`<div class="track-result-card text-center py-4"><i class="fa-solid fa-face-frown fa-3x mb-3" style="color:var(--text-muted)"></i><h5 class="font-playfair">Order Not Found</h5><p class="text-muted" style="font-size:13.5px;">We couldn't find order <strong>${id}</strong>. Please check the ID and try again, or <a href="/contact" style="color:var(--gold-dark)">contact us</a>.</p></div>`;
+  }
+}
+document.getElementById('orderIdInput').addEventListener('keydown', e=>{ if(e.key==='Enter') trackOrder(); });
+</script>
+
+<%- include('partials/footer') %>

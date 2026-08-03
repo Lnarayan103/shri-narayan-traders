@@ -1,0 +1,170 @@
+<%- include('partials/header') %>
+
+<% pageTitle = "Privacy Policy" %>
+
+<!-- Page Banner -->
+<section style="background: var(--navy-grad); border-bottom: 3px solid var(--gold); padding: 3.5rem 0;">
+  <div class="container text-center text-white">
+    <div class="fade-up">
+      <span class="section-tag">Legal</span>
+      <h1 class="font-playfair fw-bold mt-1 mb-2">Privacy Policy</h1>
+      <p class="text-gold mb-3">How we collect, use, and protect your information</p>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb justify-content-center mb-0" style="font-size:13px;">
+          <li class="breadcrumb-item"><a href="/" class="text-warning text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item active text-white-50">Privacy Policy</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <!-- Last Updated Badge -->
+      <div class="d-flex align-items-center gap-2 mb-4 fade-up">
+        <span class="badge" style="background:rgba(201,146,42,0.15);color:var(--gold);border:1px solid var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;">
+          <i class="fa-regular fa-calendar me-1"></i> Last Updated: January 2025
+        </span>
+      </div>
+
+      <div class="privacy-card fade-up">
+        <p class="lead text-muted">
+          At <strong><%= settings.businessName %></strong>, we are committed to protecting your privacy. This policy explains what information we collect when you visit our website or contact us, and how we use it.
+        </p>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-database"></i></div>
+        <h4>1. Information We Collect</h4>
+        <p>We may collect the following personal information when you interact with our website or services:</p>
+        <ul>
+          <li><strong>Contact Information:</strong> Name, phone number, email address when you submit an enquiry form or request a quote.</li>
+          <li><strong>Order Information:</strong> Billing address, delivery address, and order details when you place an order.</li>
+          <li><strong>Dealer Information:</strong> Business name, GSTIN, and address for registered dealer accounts.</li>
+          <li><strong>Usage Data:</strong> Browser type, pages visited, and time spent on our website (via analytics).</li>
+        </ul>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-gears"></i></div>
+        <h4>2. How We Use Your Information</h4>
+        <p>We use the collected information for the following purposes:</p>
+        <ul>
+          <li>To respond to your enquiries and provide product information.</li>
+          <li>To process orders and arrange delivery of products.</li>
+          <li>To send order status updates and tracking information.</li>
+          <li>To manage dealer accounts and wholesale orders.</li>
+          <li>To improve our website and customer experience.</li>
+          <li>To send promotional offers (only if you have opted in).</li>
+        </ul>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-share-nodes"></i></div>
+        <h4>3. Sharing of Information</h4>
+        <p>We do <strong>not</strong> sell, trade, or rent your personal information to third parties. We may share your data only in the following circumstances:</p>
+        <ul>
+          <li><strong>Delivery Partners:</strong> We share your name and address with logistics partners only for order delivery purposes.</li>
+          <li><strong>Legal Compliance:</strong> When required by Indian law or court order.</li>
+          <li><strong>Payment Processing:</strong> Secure payment gateways handle transactions; we do not store card details.</li>
+        </ul>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-cookie-bite"></i></div>
+        <h4>4. Cookies</h4>
+        <p>Our website may use cookies to improve your browsing experience. Cookies are small data files stored on your browser. You can disable cookies through your browser settings, though this may affect certain website features.</p>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h4>5. Data Security</h4>
+        <p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. Our website uses HTTPS encryption for all data transmissions.</p>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <h4>6. Your Rights</h4>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Request access to the personal data we hold about you.</li>
+          <li>Request correction of any inaccurate personal data.</li>
+          <li>Request deletion of your personal data from our systems.</li>
+          <li>Opt out of marketing communications at any time.</li>
+        </ul>
+        <p>To exercise any of these rights, please contact us at <a href="mailto:<%= settings.email %>"><%= settings.email %></a>.</p>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-link"></i></div>
+        <h4>7. Third-Party Links</h4>
+        <p>Our website may contain links to external sites. We are not responsible for the privacy practices or content of those websites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
+      </div>
+
+      <div class="privacy-section fade-up">
+        <div class="privacy-icon"><i class="fa-solid fa-rotate"></i></div>
+        <h4>8. Changes to This Policy</h4>
+        <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date. Continued use of our website after changes constitutes acceptance of the updated policy.</p>
+      </div>
+
+      <!-- Contact Box -->
+      <div class="privacy-contact-box fade-up">
+        <h5><i class="fa-solid fa-envelope me-2"></i>Privacy Concerns? Contact Us</h5>
+        <p>If you have any questions, concerns, or requests regarding this Privacy Policy, please reach out to us:</p>
+        <div class="d-flex flex-wrap gap-3 mt-3">
+          <a href="mailto:<%= settings.email %>" class="btn btn-sm fw-bold" style="background:var(--gold-grad);color:var(--navy-deep);border-radius:8px;padding:8px 18px;"><i class="fa-solid fa-envelope me-1"></i> <%= settings.email %></a>
+          <a href="tel:<%= settings.phone.split(',')[0].trim() %>" class="btn btn-sm fw-bold" style="background:rgba(201,146,42,0.1);color:var(--gold);border:1px solid rgba(201,146,42,0.3);border-radius:8px;padding:8px 18px;"><i class="fa-solid fa-phone me-1"></i> <%= settings.phone %></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .privacy-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    border-left: 4px solid var(--gold);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+  }
+  .privacy-section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(201,146,42,0.1);
+    position: relative;
+    padding-left: 4.5rem;
+    transition: box-shadow 0.25s ease;
+  }
+  .privacy-section:hover { box-shadow: var(--shadow-md); }
+  .privacy-icon {
+    position: absolute; left: 1.5rem; top: 1.75rem;
+    width: 36px; height: 36px;
+    background: rgba(201,146,42,0.12);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 15px;
+  }
+  .privacy-section h4 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem; }
+  .privacy-section p, .privacy-section li { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+  .privacy-section ul { padding-left: 1.25rem; margin-bottom: 0; }
+  .privacy-section li { margin-bottom: 6px; }
+  .privacy-contact-box {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-radius: 14px; padding: 2rem;
+    margin-top: 2rem; color: #fff;
+    border: 1px solid rgba(201,146,42,0.3);
+  }
+  .privacy-contact-box h5 { color: var(--gold-light); margin-bottom: 0.5rem; }
+  .privacy-contact-box p  { color: rgba(255,255,255,0.65); font-size: 14px; margin-bottom: 0; }
+</style>
+
+<%- include('partials/footer') %>

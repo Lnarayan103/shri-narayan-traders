@@ -1,0 +1,316 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Billing / POS" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">GST Billing / POS</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Generate GST invoices for walk-in customers</p>
+    </div>
+    <div style="display:flex;gap:.5rem;">
+      <button onclick="clearBill()" class="btn-admin-sm"><i class="fa-solid fa-rotate-left me-1"></i> Clear</button>
+      <button onclick="printInvoice()" class="btn-admin-primary"><i class="fa-solid fa-print me-1"></i> Print Invoice</button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Left: Bill Builder -->
+    <div class="col-lg-7">
+      <!-- Customer -->
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-user me-2 text-warning"></i>Customer Details</h5></div>
+        <div style="padding:1.25rem;">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label-admin">Customer Name</label><input type="text" id="custName" class="form-control-admin" placeholder="Walk-in Customer" /></div>
+            <div class="col-md-6"><label class="form-label-admin">Phone</label><input type="text" id="custPhone" class="form-control-admin" placeholder="+91 XXXXX XXXXX" /></div>
+            <div class="col-12"><label class="form-label-admin">Address</label><input type="text" id="custAddr" class="form-control-admin" placeholder="Customer address (optional)" /></div>
+            <div class="col-md-6"><label class="form-label-admin">GSTIN (if any)</label><input type="text" id="custGstin" class="form-control-admin" placeholder="Customer GSTIN" /></div>
+            <div class="col-md-6"><label class="form-label-admin">Payment Method</label><select id="payMethod" class="form-control-admin"><option>Cash</option><option>UPI</option><option>Card</option><option>Bank Transfer</option><option>Credit (Due)</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Item -->
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-cart-plus me-2 text-warning"></i>Add Items</h5></div>
+        <div style="padding:1.25rem;">
+          <div class="row g-2 align-items-end mb-3">
+            <div class="col-12">
+              <label class="form-label-admin">Select Product from Website Catalog (Optional)</label>
+              <select id="productSelect" class="form-control-admin">
+                <option value="">-- Choose from Catalog (or Type below) --</option>
+                <% if(products){ products.forEach(p=>{ %>
+                  <option value="<%= p.name %>" data-id="<%= p._id %>" data-price="<%= p.regularPrice || p.price %>" data-gst="<%= p.gstRate||18 %>" data-stock="<%= p.stock %>">
+                    <%= p.name %> [Price: ₹<%= (p.regularPrice || p.price).toLocaleString('en-IN') %> | Stock: <%= p.stock %>]
+                  </option>
+                <% }) } %>
+              </select>
+            </div>
+          </div>
+          <div class="row g-2 align-items-end">
+            <div class="col-lg-5">
+              <label class="form-label-admin">Product Name (or Type Custom Name) *</label>
+              <input type="text" id="itemName" class="form-control-admin" placeholder="Type product name..." />
+            </div>
+            <div class="col-lg-2"><label class="form-label-admin">Qty *</label><input type="number" id="itemQty" class="form-control-admin" value="1" min="1" /></div>
+            <div class="col-lg-2"><label class="form-label-admin">Rate (₹) *</label><input type="number" id="itemRate" class="form-control-admin" placeholder="0.00" step="0.01" /></div>
+            <div class="col-lg-2"><label class="form-label-admin">GST %</label><select id="itemGst" class="form-control-admin"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></div>
+            <div class="col-lg-1"><button onclick="addItem()" class="btn-admin-primary" style="width:100%;justify-content:center;padding:9px 0;"><i class="fa-solid fa-plus"></i></button></div>
+          </div>
+          <div id="stockAlert" class="mt-2 fw-bold" style="font-size:12px; display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <div class="admin-card">
+        <div class="table-responsive">
+          <table class="admin-table" id="billTable">
+            <thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th><th></th></tr></thead>
+            <tbody id="billBody"><tr id="emptyRow"><td colspan="7" class="text-center text-muted py-4">No items added yet</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Summary -->
+    <div class="col-lg-5">
+      <div class="admin-card" style="position:sticky;top:80px;">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-file-invoice-dollar me-2 text-warning"></i>Invoice Summary</h5></div>
+        <div style="padding:1.25rem;">
+          <div style="background:var(--cream);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.4rem;">Order ID</div>
+            <div id="displayOrderId" style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--navy);">—</div>
+          </div>
+
+          <div class="summary-row"><span>Subtotal (excl. GST)</span><span id="subTotal">₹0.00</span></div>
+          <div class="summary-row"><span>CGST</span><span id="cgstAmt">₹0.00</span></div>
+          <div class="summary-row"><span>SGST</span><span id="sgstAmt">₹0.00</span></div>
+          <div style="height:1px;background:rgba(0,0,0,.08);margin:.75rem 0;"></div>
+          <div class="summary-row"><span style="font-weight:800;font-size:1rem;">Total Payable</span><span id="grandTotal" style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;color:var(--gold-dark);">₹0.00</span></div>
+
+          <div class="row g-2 mt-3">
+            <div class="col-6"><label class="form-label-admin">Discount (₹)</label><input type="number" id="discount" class="form-control-admin" value="0" min="0" oninput="recalc()" /></div>
+            <div class="col-6"><label class="form-label-admin">Received (₹)</label><input type="number" id="received" class="form-control-admin" value="0" min="0" oninput="calcChange()" /></div>
+          </div>
+          <div class="summary-row mt-2" style="background:rgba(22,163,74,.06);padding:8px 12px;border-radius:8px;border:1px solid rgba(22,163,74,.15);">
+            <span style="color:#15803d;font-weight:700;">Change / Due</span>
+            <span id="changeAmt" style="color:#15803d;font-weight:800;">₹0.00</span>
+          </div>
+
+          <div style="margin-top:1.25rem;display:flex;flex-direction:column;gap:.6rem;">
+            <button onclick="saveBill()" class="btn-admin-primary" style="justify-content:center;padding:11px;"><i class="fa-solid fa-floppy-disk me-2"></i> Save Bill & Generate ID</button>
+            <button onclick="printInvoice()" class="btn-admin-sm" style="padding:10px;text-align:center;"><i class="fa-solid fa-print me-2"></i> Print Invoice</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.summary-row{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;margin-bottom:.5rem;color:var(--text-muted);}
+.summary-row span:last-child{font-weight:700;color:var(--navy);}
+</style>
+
+<script>
+let billItems = [];
+let currentOrderId = generateBillId();
+
+function generateBillId() {
+  const now = new Date();
+  const date = now.getFullYear().toString() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0');
+  const rand = Math.floor(1000 + Math.random()*9000);
+  return `SNT-${date}-${rand}`;
+}
+
+document.getElementById('displayOrderId').textContent = currentOrderId;
+
+// Auto-fill price when catalog product is chosen
+document.getElementById('productSelect').addEventListener('change', function() {
+  const opt = this.options[this.selectedIndex];
+  const itemNameEl = document.getElementById('itemName');
+  const itemRateEl = document.getElementById('itemRate');
+  const itemGstEl = document.getElementById('itemGst');
+  const stockAlertEl = document.getElementById('stockAlert');
+  
+  if (this.value) {
+    itemNameEl.value = this.value;
+    itemRateEl.value = opt.dataset.price || '';
+    itemGstEl.value  = opt.dataset.gst || '18';
+    
+    // Display stock availability details
+    const stock = parseInt(opt.dataset.stock);
+    if (!isNaN(stock)) {
+      stockAlertEl.style.display = 'block';
+      if (stock <= 0) {
+        stockAlertEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-danger"></i> Out of Stock! (Available: 0)`;
+        stockAlertEl.style.color = '#dc2626';
+      } else if (stock < 5) {
+        stockAlertEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-warning"></i> Low Stock Warning! (Available: ${stock})`;
+        stockAlertEl.style.color = '#d97706';
+      } else {
+        stockAlertEl.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i> Stock Available: ${stock}`;
+        stockAlertEl.style.color = '#15803d';
+      }
+    } else {
+      stockAlertEl.style.display = 'none';
+    }
+  } else {
+    stockAlertEl.style.display = 'none';
+  }
+});
+
+// Deselect catalog option if name is manually edited
+document.getElementById('itemName').addEventListener('input', function() {
+  const select = document.getElementById('productSelect');
+  if (select.value !== this.value) {
+    select.value = '';
+    document.getElementById('stockAlert').style.display = 'none';
+  }
+});
+
+function addItem() {
+  const name = document.getElementById('itemName').value.trim();
+  const qty  = parseFloat(document.getElementById('itemQty').value) || 1;
+  const rate = parseFloat(document.getElementById('itemRate').value) || 0;
+  const gst  = parseFloat(document.getElementById('itemGst').value) || 0;
+  if (!name || !rate) { adminToast('Enter item name and rate','error'); return; }
+  
+  const select = document.getElementById('productSelect');
+  let productId = 'custom';
+  if (select.value === name) {
+    const opt = select.options[select.selectedIndex];
+    productId = opt.dataset.id || 'custom';
+    
+    // Check stock limit
+    const stock = parseInt(opt.dataset.stock) || 0;
+    const existingQty = billItems
+      .filter(item => item.productId === productId)
+      .reduce((sum, item) => sum + item.qty, 0);
+      
+    if (existingQty + qty > stock) {
+      adminToast(`Cannot add items exceeding available catalog stock (${stock})`,'error');
+      return;
+    }
+  }
+  
+  billItems.push({ productId, name, qty, rate, gst });
+  
+  // Clear inputs
+  document.getElementById('productSelect').value = '';
+  document.getElementById('itemName').value = '';
+  document.getElementById('itemRate').value = '';
+  document.getElementById('itemQty').value = 1;
+  document.getElementById('stockAlert').style.display = 'none';
+  renderBill();
+}
+
+function removeItem(i) { billItems.splice(i,1); renderBill(); }
+
+function renderBill() {
+  const tbody = document.getElementById('billBody');
+  if (billItems.length === 0) { tbody.innerHTML='<tr id="emptyRow"><td colspan="7" class="text-center text-muted py-4">No items added yet</td></tr>'; recalc(); return; }
+  tbody.innerHTML = billItems.map((item,i)=>{
+    const amt = item.qty * item.rate * (1 + item.gst/100);
+    return `<tr>
+      <td>${i+1}</td>
+      <td style="font-weight:600;">${item.name}</td>
+      <td>${item.qty}</td>
+      <td>₹${item.rate.toLocaleString('en-IN')}</td>
+      <td>${item.gst}%</td>
+      <td style="font-weight:700;">₹${amt.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      <td><button onclick="removeItem(${i})" class="btn-admin-xs" style="background:rgba(220,38,38,.08);color:#dc2626;border-color:rgba(220,38,38,.15);"><i class="fa-solid fa-xmark"></i></button></td>
+    </tr>`;
+  }).join('');
+  recalc();
+}
+
+function recalc() {
+  const disc = parseFloat(document.getElementById('discount').value)||0;
+  let sub=0, tax=0;
+  billItems.forEach(item=>{ sub += item.qty*item.rate; tax += item.qty*item.rate*(item.gst/100); });
+  const grand = Math.max(0, sub + tax - disc);
+  document.getElementById('subTotal').textContent  = '₹'+sub.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('cgstAmt').textContent   = '₹'+(tax/2).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('sgstAmt').textContent   = '₹'+(tax/2).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('grandTotal').textContent= '₹'+grand.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  calcChange();
+}
+
+function calcChange() {
+  const grand   = parseFloat(document.getElementById('grandTotal').textContent.replace(/[^0-9.]/g,''))||0;
+  const received= parseFloat(document.getElementById('received').value)||0;
+  const change  = received - grand;
+  const el = document.getElementById('changeAmt');
+  el.textContent = '₹'+ Math.abs(change).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  el.style.color = change >= 0 ? '#15803d' : '#dc2626';
+  el.previousElementSibling.textContent = change >= 0 ? 'Change (Return)' : 'Balance Due';
+}
+
+async function saveBill() {
+  if (billItems.length === 0) { adminToast('Add at least one item','error'); return; }
+  const body = {
+    orderId: currentOrderId,
+    customerName: document.getElementById('custName').value||'Walk-in',
+    customerPhone: document.getElementById('custPhone').value||'',
+    customerAddress: document.getElementById('custAddr').value||'',
+    customerGstin: document.getElementById('custGstin').value||'',
+    paymentMethod: document.getElementById('payMethod').value,
+    items: billItems,
+    discount: parseFloat(document.getElementById('discount').value)||0,
+    totalAmount: parseFloat(document.getElementById('grandTotal').textContent.replace(/[^0-9.]/g,''))||0,
+    paymentStatus: 'paid',
+    status: 'delivered',
+    source: 'pos'
+  };
+  const res = await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(res.ok){ adminToast('Bill saved! Order ID: '+currentOrderId,'success'); }
+  else adminToast('Failed to save bill','error');
+}
+
+function printInvoice() {
+  if(billItems.length===0){ adminToast('Add items first','error'); return; }
+  const win = window.open('','_blank','width=800,height=600');
+  const grand = document.getElementById('grandTotal').textContent;
+  const sub = document.getElementById('subTotal').textContent;
+  const cgst = document.getElementById('cgstAmt').textContent;
+  const sgst = document.getElementById('sgstAmt').textContent;
+  const rows = billItems.map((item,i)=>`<tr><td>${i+1}</td><td>${item.name}</td><td>${item.qty}</td><td>₹${item.rate.toLocaleString('en-IN')}</td><td>${item.gst}%</td><td>₹${(item.qty*item.rate*(1+item.gst/100)).toFixed(2)}</td></tr>`).join('');
+  win.document.write(`<!DOCTYPE html><html><head><title>Invoice - ${currentOrderId}</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:800px;margin:0 auto}h2{text-align:center;color:#001f4d}.header{display:flex;justify-content:space-between;margin-bottom:20px}.bill-table{width:100%;border-collapse:collapse;margin:20px 0}.bill-table th,.bill-table td{border:1px solid #ddd;padding:8px;text-align:left}.bill-table th{background:#001f4d;color:#fff}.totals{float:right;width:280px}.total-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee}.grand{font-size:1.2rem;font-weight:bold;color:#9b6f1a;border-top:2px solid #9b6f1a;padding-top:8px}@media print{button{display:none}}</style></head><body>
+  <h2>TAX INVOICE</h2>
+  <div class="header">
+    <div><strong><%= settings.businessName %></strong><br><%= settings.address %><br>GSTIN: <%= settings.gstin||'—' %><br>Ph: <%= settings.phone %></div>
+    <div style="text-align:right"><strong>Invoice No:</strong> ${currentOrderId}<br><strong>Date:</strong> ${new Date().toLocaleDateString('en-IN')}<br><strong>Payment:</strong> ${document.getElementById('payMethod').value}</div>
+  </div>
+  <div style="border:1px solid #ddd;padding:10px;border-radius:5px;margin-bottom:15px;">
+    <strong>Bill To:</strong><br>${document.getElementById('custName').value||'Walk-in Customer'}<br>${document.getElementById('custPhone').value||''}<br>${document.getElementById('custAddr').value||''}<br>${document.getElementById('custGstin').value?'GSTIN: '+document.getElementById('custGstin').value:''}
+  </div>
+  <table class="bill-table"><thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="totals">
+    <div class="total-row"><span>Subtotal (excl. GST)</span><span>${sub}</span></div>
+    <div class="total-row"><span>CGST</span><span>${cgst}</span></div>
+    <div class="total-row"><span>SGST</span><span>${sgst}</span></div>
+    <div class="total-row grand"><span>TOTAL</span><span>${grand}</span></div>
+  </div>
+  <div style="clear:both;margin-top:40px;text-align:center;color:#666;font-size:12px;">Thank you for shopping at <%= settings.businessName %>! | <%= settings.phone %></div>
+  <button onclick="window.print()" style="margin-top:20px;padding:10px 20px;background:#001f4d;color:#fff;border:none;border-radius:5px;cursor:pointer;">Print / Save PDF</button>
+  </body></html>`);
+  win.document.close();
+}
+
+function clearBill() {
+  billItems = [];
+  currentOrderId = generateBillId();
+  document.getElementById('displayOrderId').textContent = currentOrderId;
+  document.getElementById('custName').value = '';
+  document.getElementById('custPhone').value = '';
+  document.getElementById('custAddr').value = '';
+  document.getElementById('custGstin').value = '';
+  document.getElementById('discount').value = 0;
+  document.getElementById('received').value = 0;
+  renderBill();
+  adminToast('Bill cleared. New Order ID generated.','info');
+}
+</script>
+
+<%- include('../partials/admin-footer') %>

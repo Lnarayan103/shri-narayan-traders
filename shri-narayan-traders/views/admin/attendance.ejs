@@ -1,0 +1,40 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between mb-4"><h4 class="mb-0">Staff Attendance</h4></div>
+  <div class="admin-card p-3 mb-4">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small fw-bold">Staff</label>
+        <select id="aStaff" class="form-select">
+          <% (staff||[]).forEach(s => { %>
+            <option value="<%= s._id %>" data-name="<%= s.name||s.username %>"><%= s.name||s.username %> (<%= s.role %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2"><label class="form-label small fw-bold">Date</label><input id="aDate" type="date" class="form-control" value="<%= new Date().toISOString().slice(0,10) %>"></div>
+      <div class="col-md-2"><label class="form-label small fw-bold">Status</label>
+        <select id="aStatus" class="form-select"><option value="present">Present</option><option value="absent">Absent</option><option value="half">Half Day</option><option value="leave">Leave</option></select>
+      </div>
+      <div class="col-md-2"><button class="btn btn-primary w-100" onclick="mark()">Mark</button></div>
+    </div>
+  </div>
+  <div class="admin-card table-responsive"><table class="table table-sm mb-0">
+    <thead class="table-light"><tr><th>Date</th><th>Staff</th><th>Status</th><th>Notes</th></tr></thead>
+    <tbody>
+      <% (attendance||[]).forEach(a => { %>
+      <tr><td><%= a.date %></td><td><%= a.staffName||a.staffId %></td>
+        <td><span class="badge bg-<%= a.status==='present'?'success':a.status==='absent'?'danger':'warning' %>"><%= a.status %></span></td>
+        <td class="small"><%= a.notes||'' %></td></tr>
+      <% }) %>
+      <% if(!(attendance||[]).length){ %><tr><td colspan="4" class="text-center text-muted py-4">No records</td></tr><% } %>
+    </tbody></table></div>
+</div>
+<script>
+async function mark(){
+  const sel=document.getElementById('aStaff');
+  const body={staffId:sel.value,staffName:sel.selectedOptions[0].dataset.name,date:aDate.value,status:aStatus.value};
+  const r=await fetch('/api/attendance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok) location.reload(); else alert('Failed');
+}
+</script>
+<%- include('../partials/admin-footer') %>

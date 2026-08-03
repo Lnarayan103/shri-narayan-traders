@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold font-playfair text-dark mb-0">Manage Showcase Gallery</h1>
+      <p class="text-secondary small">Upload photos of completed worksites, furniture designs, and hardware fittings</p>
+    </div>
+    <div>
+      <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#galleryModal"><i class="fa-solid fa-plus me-1"></i> Add Showcase Photo</button>
+      <a href="/admin/dashboard" class="btn btn-outline-dark fw-bold ms-2"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow-sm border">
+    <div class="row g-4">
+      <% if (items && items.length > 0) { %>
+        <% items.forEach(item => { %>
+          <div class="col-md-3 col-sm-6" id="card-<%= item._id %>">
+            <div class="card border shadow-sm h-100 overflow-hidden text-center position-relative">
+              <div style="height: 180px; overflow: hidden;" class="bg-dark d-flex align-items-center justify-content-center">
+                <img src="<%= item.image %>" class="w-100 h-100 object-fit-cover" alt="">
+              </div>
+              <div class="card-body py-3">
+                <span class="badge bg-secondary text-uppercase mb-2"><%= item.category %></span>
+                <h6 class="fw-bold text-dark mb-2 text-truncate"><%= item.title %></h6>
+                <button class="btn btn-outline-danger btn-sm w-100 fw-bold" onclick="deleteGalleryItem('<%= item._id %>')"><i class="fa-solid fa-trash-can me-1"></i> Remove Photo</button>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12 text-center py-5">
+          <i class="fa-solid fa-images text-muted display-2 mb-3"></i>
+          <h5 class="text-secondary fw-bold">Gallery is Empty</h5>
+          <p class="text-muted">Click "Add Showcase Photo" to upload project visuals.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="galleryForm" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Add Showcase Photo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Photo Title / Caption *</label>
+            <input type="text" id="title" name="title" class="form-control" placeholder="e.g. Aluminium frame partition site" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Category Group *</label>
+            <select id="category" name="category" class="form-select" required>
+              <option value="furniture">Wooden & Steel Furniture</option>
+              <option value="aluminium">Aluminium Fabrication</option>
+              <option value="hardware">Hardware Fittings</option>
+              <option value="projects">Completed Worksite Sites</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Upload Image File *</label>
+            <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary fw-bold">Upload to Gallery</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('galleryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+      const response = await fetch('/api/gallery', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert('Photo uploaded successfully!');
+        window.location.reload();
+      } else {
+        alert(result.error || 'Failed to upload photo.');
+      }
+    } catch(err) {
+      alert('Network error uploading file.');
+    }
+  });
+
+  async function deleteGalleryItem(id) {
+    if(!confirm('Permanently remove this photo from showcase gallery?')) return;
+    try {
+      const response = await fetch(`/api/gallery/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        alert('Showcase item deleted successfully.');
+        document.getElementById(`card-${id}`).remove();
+      } else {
+        alert('Failed to delete showcase item.');
+      }
+    } catch(err) {
+      alert('Network error while deleting.');
+    }
+  }
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,324 @@
+<%- include('../partials/dealer-header') %>
+
+<div class="container py-5">
+  <!-- Profile Summary Box -->
+  <div class="bg-white p-4 rounded shadow-sm border border-top border-warning border-3 mb-5">
+    <div class="row align-items-center">
+      <div class="col-md-8 mb-3 mb-md-0">
+        <span class="badge bg-success mb-2"><i class="fa-solid fa-circle-check me-1"></i> Verified Partner</span>
+        <h2 class="fw-bold text-dark font-playfair mb-1"><%= user.businessName %></h2>
+        <p class="text-secondary mb-0"><i class="fa-solid fa-location-dot me-1 text-danger"></i> <%= user.address || 'Address Not Added' %></p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <div class="d-inline-block bg-light p-3 rounded text-start">
+          <small class="text-muted d-block fw-bold">GSTIN DETAILS</small>
+          <strong class="text-primary text-uppercase"><%= user.gstin || 'URP (Unregistered)' %></strong>
+          <small class="text-muted d-block mt-1">Phone: <%= user.phone %></small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <ul class="nav nav-pills mb-4 gap-2" id="dealerTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active fw-bold" id="bulk-order-tab" data-bs-toggle="pill" data-bs-target="#bulk-order" type="button"><i class="fa-solid fa-cart-flatbed me-2"></i> Place Bulk Order</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-bold" id="order-history-tab" data-bs-toggle="pill" data-bs-target="#order-history" type="button"><i class="fa-solid fa-clock-rotate-left me-2"></i> Order History</button>
+    </li>
+  </ul>
+
+  <!-- Tabs Content -->
+  <div class="tab-content" id="dealerTabsContent">
+    
+    <!-- Tab 1: Place Bulk Order -->
+    <div class="tab-pane fade show active" id="bulk-order" role="tabpanel">
+      <div class="row g-4">
+        <!-- Products selection -->
+        <div class="col-lg-7">
+          <div class="bg-white p-4 rounded shadow-sm border h-100">
+            <h4 class="fw-bold text-dark mb-3">Wholesale Catalog</h4>
+            
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+              <table class="table align-middle">
+                <thead class="table-light sticky-top">
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-end">Wholesale Rate</th>
+                    <th class="text-center" style="width: 130px;">Stock</th>
+                    <th class="text-center" style="width: 140px;">Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (products && products.length > 0) { %>
+                    <% products.forEach(prod => { %>
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <% if (prod.image) { %>
+                              <img src="<%= prod.image %>" class="rounded object-fit-cover" style="width: 35px; height: 35px;" alt="">
+                            <% } else { %>
+                              <div class="bg-light rounded text-center" style="width: 35px; height: 35px; line-height: 35px;"><i class="fa-regular fa-image text-muted"></i></div>
+                            <% } %>
+                            <div>
+                              <strong class="text-dark d-block"><%= prod.name %></strong>
+                              <small class="text-muted text-uppercase" style="font-size: 10px;"><%= prod.category %></small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="text-end fw-bold text-success">Rs. <%= prod.wholesalePrice.toFixed(2) %></td>
+                        <td class="text-center">
+                          <% if(prod.stock > 0) { %>
+                            <span class="badge bg-success-subtle text-success"><%= prod.stock %> left</span>
+                          <% } else { %>
+                            <span class="badge bg-danger-subtle text-danger">Out of stock</span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% if(prod.stock > 0) { %>
+                            <div class="input-group input-group-sm">
+                              <input type="number" id="qty-<%= prod._id %>" class="form-control text-center" min="1" max="<%= prod.stock %>" value="1">
+                              <button class="btn btn-primary" onclick="addToOrderCart('<%= prod._id %>', '<%= prod.name %>', <%= prod.wholesalePrice %>)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                          <% } else { %>
+                            <input type="number" class="form-control form-control-sm text-center" disabled value="0">
+                          <% } %>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="4" class="text-center py-4 text-muted">No products found in stock.</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Cart & Checkout summary -->
+        <div class="col-lg-5">
+          <div class="bg-white p-4 rounded shadow-sm border h-100 d-flex flex-column justify-content-between">
+            <div>
+              <h4 class="fw-bold text-dark mb-3"><i class="fa-solid fa-cart-shopping text-warning me-1"></i> Order Items</h4>
+              
+              <div id="cartAlert" class="alert d-none"></div>
+              
+              <!-- Cart List -->
+              <div id="cartList" class="mb-4" style="max-height: 300px; overflow-y: auto;">
+                <p class="text-muted text-center py-4">Your order cart is currently empty. Add products from the catalog list.</p>
+              </div>
+            </div>
+            
+            <!-- Summary calculations -->
+            <div class="border-top pt-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Subtotal (Excl. GST)</span>
+                <span id="cartSubtotal" class="fw-bold">Rs. 0.00</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">GST (18% standard rate)</span>
+                <span id="cartGst" class="fw-bold">Rs. 0.00</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                <span class="text-dark fw-bold">Grand Total (Incl. GST)</span>
+                <span id="cartTotal" class="fw-bold text-primary fs-5">Rs. 0.00</span>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">Shipping Address *</label>
+                <textarea id="shipAddress" class="form-control form-control-sm" rows="2" placeholder="Destination shop location details..."><%= user.address %></textarea>
+              </div>
+              
+              <button id="btnPlaceOrder" class="btn btn-warning fw-bold w-100 py-2.5" disabled onclick="checkoutOrder()">
+                <i class="fa-solid fa-circle-check me-1"></i> Place Bulk Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab 2: Order History -->
+    <div class="tab-pane fade" id="order-history" role="tabpanel">
+      <div class="bg-white p-4 rounded shadow-sm border">
+        <h4 class="fw-bold text-dark mb-4">Past Order History</h4>
+        
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th class="text-end">Items Count</th>
+                <th class="text-end">Grand Total</th>
+                <th class="text-center">GST Invoice</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (orders && orders.length > 0) { %>
+                <% orders.forEach(ord => { %>
+                  <tr>
+                    <td><strong class="text-primary text-uppercase"><%= ord.orderId %></strong></td>
+                    <td><%= new Date(ord.createdAt).toLocaleDateString() %></td>
+                    <td>
+                      <% if(ord.status === 'pending') { %>
+                        <span class="badge bg-warning text-dark">Pending</span>
+                      <% } else if(ord.status === 'processing') { %>
+                        <span class="badge bg-info text-dark">Processing</span>
+                      <% } else if(ord.status === 'shipped') { %>
+                        <span class="badge bg-primary">Shipped</span>
+                      <% } else if(ord.status === 'delivered') { %>
+                        <span class="badge bg-success">Delivered</span>
+                      <% } else { %>
+                        <span class="badge bg-danger">Cancelled</span>
+                      <% } %>
+                    </td>
+                    <td class="text-end"><%= ord.items.length %> items</td>
+                    <td class="text-end fw-bold">Rs. <%= ord.totalAmount.toFixed(2) %></td>
+                    <td class="text-center">
+                      <a href="/api/orders/<%= ord._id %>/invoice" class="btn btn-outline-danger btn-sm fw-bold"><i class="fa-solid fa-file-pdf me-1"></i> Download Invoice</a>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No orders found in history.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let orderCart = [];
+
+  function renderOrderCart() {
+    const listContainer = document.getElementById('cartList');
+    const subtotalEl = document.getElementById('cartSubtotal');
+    const gstEl = document.getElementById('cartGst');
+    const totalEl = document.getElementById('cartTotal');
+    const placeBtn = document.getElementById('btnPlaceOrder');
+    
+    if (orderCart.length === 0) {
+      listContainer.innerHTML = `<p class="text-muted text-center py-4">Your order cart is currently empty. Add products from the catalog list.</p>`;
+      subtotalEl.innerText = 'Rs. 0.00';
+      gstEl.innerText = 'Rs. 0.00';
+      totalEl.innerText = 'Rs. 0.00';
+      placeBtn.disabled = true;
+      return;
+    }
+    
+    placeBtn.disabled = false;
+    let listHTML = `<ul class="list-group list-group-flush border">`;
+    let subtotal = 0;
+    
+    orderCart.forEach((item, idx) => {
+      const total = item.qty * item.rate;
+      subtotal += total;
+      listHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <div style="max-width: 70%;">
+            <strong class="text-dark d-block text-truncate">${item.name}</strong>
+            <small class="text-muted">Qty: ${item.qty} &times; Rs. ${item.rate.toFixed(2)}</small>
+          </div>
+          <div class="text-end">
+            <span class="fw-bold d-block">Rs. ${total.toFixed(2)}</span>
+            <button class="btn btn-link text-danger p-0 border-0" onclick="removeFromCart(${idx})" style="font-size: 11px;"><i class="fa-solid fa-trash-can"></i> Remove</button>
+          </div>
+        </li>
+      `;
+    });
+    
+    listHTML += `</ul>`;
+    listContainer.innerHTML = listHTML;
+    
+    const gstRate = 18;
+    const gstAmount = (subtotal * gstRate) / 100;
+    const grandTotal = subtotal + gstAmount;
+    
+    subtotalEl.innerText = `Rs. ${subtotal.toFixed(2)}`;
+    gstEl.innerText = `Rs. ${gstAmount.toFixed(2)}`;
+    totalEl.innerText = `Rs. ${grandTotal.toFixed(2)}`;
+  }
+
+  function addToOrderCart(id, name, rate) {
+    const qtyInput = document.getElementById(`qty-${id}`);
+    const qty = parseInt(qtyInput.value) || 1;
+    
+    // Check if already in cart
+    const existing = orderCart.find(item => item.productId === id);
+    if (existing) {
+      existing.qty += qty;
+    } else {
+      orderCart.push({
+        productId: id,
+        name: name,
+        rate: rate,
+        qty: qty
+      });
+    }
+    renderOrderCart();
+  }
+
+  function removeFromCart(index) {
+    orderCart.splice(index, 1);
+    renderOrderCart();
+  }
+
+  async function checkoutOrder() {
+    const alertBox = document.getElementById('cartAlert');
+    const placeBtn = document.getElementById('btnPlaceOrder');
+    alertBox.className = 'alert d-none';
+    placeBtn.disabled = true;
+    
+    const shippingAddress = document.getElementById('shipAddress').value;
+    if (!shippingAddress.trim()) {
+      alertBox.className = 'alert alert-danger';
+      alertBox.innerText = 'Shipping address is required.';
+      placeBtn.disabled = false;
+      return;
+    }
+    
+    const checkoutItems = orderCart.map(item => ({
+      productId: item.productId,
+      qty: item.qty
+    }));
+    
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: checkoutItems, shippingAddress })
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alertBox.className = 'alert alert-success';
+        alertBox.innerText = 'Order placed successfully! Reloading...';
+        orderCart = [];
+        renderOrderCart();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        alertBox.className = 'alert alert-danger';
+        alertBox.innerText = result.error || 'Failed to place order. Try again.';
+        placeBtn.disabled = false;
+      }
+    } catch (err) {
+      alertBox.className = 'alert alert-danger';
+      alertBox.innerText = 'Network error while placing order.';
+      placeBtn.disabled = false;
+    }
+  }
+</script>
+
+<%- include('../partials/dealer-footer') %>

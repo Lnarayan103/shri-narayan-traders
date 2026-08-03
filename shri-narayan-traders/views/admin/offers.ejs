@@ -1,0 +1,227 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Offers & Deals" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">Offers &amp; Deals</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Manage promotional offers shown on homepage and offers page</p>
+    </div>
+    <button onclick="openOfferModal()" class="btn-admin-primary"><i class="fa-solid fa-plus"></i> Add Offer</button>
+  </div>
+
+  <div class="row g-3" id="offersGrid">
+    <% if(offers && offers.length > 0) { %>
+    <% offers.forEach(offer=>{ %>
+    <div class="col-md-4 col-lg-3" id="offer-<%= offer._id %>">
+      <div class="offer-admin-card">
+        <div class="oac-header">
+          <span class="oac-tag"><%= offer.tag||'Offer' %></span>
+          <div class="oac-discount"><%= offer.discount %></div>
+        </div>
+        <div class="oac-body">
+          <h6><%= offer.title %></h6>
+          <p><%= offer.description %></p>
+          <div style="font-size:11px;color:var(--gold-dark);"><i class="fa-regular fa-clock me-1"></i><%= offer.validity %></div>
+        </div>
+        <div class="oac-footer">
+          <button onclick="editOffer('<%= offer._id %>')" class="btn-admin-xs"><i class="fa-solid fa-pen me-1"></i>Edit</button>
+          <button onclick="deleteOffer('<%= offer._id %>')" class="btn-admin-xs" style="background:rgba(220,38,38,.08);color:#dc2626;border-color:rgba(220,38,38,.15);"><i class="fa-solid fa-trash me-1"></i>Delete</button>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+    <% } else { %>
+    <div class="col-12 text-center py-5">
+      <i class="fa-solid fa-tag fa-3x mb-3 d-block" style="color:rgba(201,146,42,.2)"></i>
+      <p class="text-muted">No offers yet. Add one to display on the website.</p>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="offerModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="border-radius:16px;border:1px solid rgba(201,146,42,.2);">
+      <div class="modal-header" style="border-bottom:1px solid rgba(0,0,0,.07);">
+        <h5 class="modal-title font-playfair" id="modalTitle">Add New Offer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <input type="hidden" id="editOfferId" />
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label-admin">Offer Title *</label><input type="text" id="oTitle" class="form-control-admin" placeholder="e.g. Monsoon Sale" /></div>
+          <div class="col-md-6"><label class="form-label-admin">Discount Text *</label><input type="text" id="oDiscount" class="form-control-admin" placeholder="e.g. 20% OFF or ₹500 OFF" /></div>
+          <div class="col-md-6"><label class="form-label-admin">Tag / Label</label><input type="text" id="oTag" class="form-control-admin" placeholder="e.g. Flash Sale, Clearance" /></div>
+          <div class="col-md-6"><label class="form-label-admin">Valid Till *</label><input type="text" id="oValidity" class="form-control-admin" placeholder="e.g. 31 July 2025" /></div>
+          <div class="col-md-6"><label class="form-label-admin">Expiry Date &amp; Time (for countdown timer)</label><input type="datetime-local" id="oEndDate" class="form-control-admin" /></div>
+          <div class="col-12"><label class="form-label-admin">Description</label><textarea id="oDesc" class="form-control-admin" rows="3" placeholder="Describe the offer..."></textarea></div>
+          <div class="col-12"><label class="form-label-admin">Applicable Products (comma separated)</label><input type="text" id="oProducts" class="form-control-admin" placeholder="e.g. All Plumbing, Stanley Tools, Sofa Sets" /></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top:1px solid rgba(0,0,0,.07);">
+        <button type="button" class="btn-admin-sm" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" onclick="saveOffer()" class="btn-admin-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Save Offer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.offer-admin-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid rgba(201,146,42,.1);transition:all .25s ease;}
+.offer-admin-card:hover{box-shadow:var(--shadow-md);}
+.oac-header{background:var(--navy-grad);padding:1.25rem;}
+.oac-tag{display:inline-block;background:var(--gold-grad);color:var(--navy-deep);font-size:10px;font-weight:800;padding:2px 10px;border-radius:20px;margin-bottom:.4rem;}
+.oac-discount{font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:var(--gold-light);line-height:1;}
+.oac-body{padding:1rem;}
+.oac-body h6{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:.3rem;}
+.oac-body p{font-size:12.5px;color:var(--text-muted);margin-bottom:.4rem;line-height:1.6;}
+.oac-footer{padding:.75rem 1rem;border-top:1px solid rgba(0,0,0,.05);display:flex;gap:.5rem;}
+</style>
+
+<script>
+let offerModal = null;
+
+function getOfferModal() {
+  if (!offerModal) {
+    const el = document.getElementById('offerModal');
+    if (el && typeof bootstrap !== 'undefined') {
+      offerModal = bootstrap.Modal.getOrCreateInstance(el);
+    }
+  }
+  return offerModal;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('action') === 'add') {
+    openOfferModal();
+  }
+});
+
+function openOfferModal(){ 
+  const editOfferIdEl = document.getElementById('editOfferId');
+  if (editOfferIdEl) editOfferIdEl.value = ''; 
+  
+  const modalTitleEl = document.getElementById('modalTitle');
+  if (modalTitleEl) modalTitleEl.textContent = 'Add New Offer'; 
+  
+  ['oTitle','oDiscount','oTag','oValidity','oEndDate','oDesc','oProducts'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  }); 
+  
+  const modal = getOfferModal();
+  if (modal) modal.show(); 
+}
+
+async function editOffer(id){ 
+  adminToast('Loading offer details...','info'); 
+  try {
+    const res = await fetch(`/api/offers/${id}`);
+    if (!res.ok) throw new Error('Failed to fetch offer details');
+    const offer = await res.json();
+    
+    const editOfferIdEl = document.getElementById('editOfferId');
+    if (editOfferIdEl) editOfferIdEl.value = offer._id;
+    
+    const modalTitleEl = document.getElementById('modalTitle');
+    if (modalTitleEl) modalTitleEl.textContent = 'Edit Offer';
+    
+    ['oTitle', 'oDiscount', 'oTag', 'oValidity', 'oDesc'].forEach(field => {
+      const el = document.getElementById(field);
+      const dataField = field.substring(1).toLowerCase(); // oTitle -> title, etc.
+      // Special check since validity has different mapping name
+      let val = '';
+      if (field === 'oTitle') val = offer.title;
+      else if (field === 'oDiscount') val = offer.discount;
+      else if (field === 'oTag') val = offer.tag;
+      else if (field === 'oValidity') val = offer.validity;
+      else if (field === 'oDesc') val = offer.description;
+      if (el) el.value = val || '';
+    });
+    
+    const productsEl = document.getElementById('oProducts');
+    if (productsEl) {
+      productsEl.value = offer.products ? offer.products.join(', ') : '';
+    }
+    
+    let localDateStr = '';
+    if (offer.endDate) {
+      const d = new Date(offer.endDate);
+      const pad = (n) => String(n).padStart(2, '0');
+      localDateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    const endDateEl = document.getElementById('oEndDate');
+    if (endDateEl) endDateEl.value = localDateStr;
+    
+    const modal = getOfferModal();
+    if (modal) modal.show();
+  } catch (error) {
+    console.error(error);
+    adminToast('Error loading offer details', 'error');
+  }
+}
+
+async function saveOffer(){
+  const idEl = document.getElementById('editOfferId');
+  const id = idEl ? idEl.value : '';
+  
+  const rawEndDateEl = document.getElementById('oEndDate');
+  const rawEndDate = rawEndDateEl ? rawEndDateEl.value : '';
+  
+  let endDateIso = null;
+  if (rawEndDate) {
+    try {
+      const parsedDate = new Date(rawEndDate);
+      if (!isNaN(parsedDate.getTime())) {
+        endDateIso = parsedDate.toISOString();
+      }
+    } catch (e) {
+      console.error('Invalid date format:', e);
+    }
+  }
+  
+  const body = { 
+    title: document.getElementById('oTitle') ? document.getElementById('oTitle').value : '', 
+    discount: document.getElementById('oDiscount') ? document.getElementById('oDiscount').value : '', 
+    tag: document.getElementById('oTag') ? document.getElementById('oTag').value : '', 
+    validity: document.getElementById('oValidity') ? document.getElementById('oValidity').value : '', 
+    description: document.getElementById('oDesc') ? document.getElementById('oDesc').value : '', 
+    products: document.getElementById('oProducts') ? document.getElementById('oProducts').value.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    endDate: endDateIso
+  };
+  
+  if (!body.title || !body.discount || !body.validity){ 
+    adminToast('Please fill required fields','error'); 
+    return; 
+  }
+  
+  const url = id ? `/api/offers/${id}` : '/api/offers';
+  const method = id ? 'PUT' : 'POST';
+  const res = await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(res.ok){ 
+    adminToast('Offer saved successfully!','success'); 
+    const modal = getOfferModal();
+    if (modal) modal.hide(); 
+    setTimeout(()=>location.reload(),1200); 
+  } else {
+    adminToast('Failed to save offer','error');
+  }
+}
+
+async function deleteOffer(id){
+  if(!confirm('Delete this offer?')) return;
+  const res = await fetch(`/api/offers/${id}`,{method:'DELETE'});
+  if(res.ok){ 
+    const cardEl = document.getElementById(`offer-${id}`);
+    if (cardEl) cardEl.remove(); 
+    adminToast('Offer deleted successfully','success'); 
+  } else {
+    adminToast('Failed to delete offer','error');
+  }
+}
+</script>
+
+<%- include('../partials/admin-footer') %>

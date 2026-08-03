@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+<div class="container py-5" style="min-height:70vh;">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header text-white py-4" style="background: linear-gradient(135deg,#001f4d,#003d82);">
+          <div class="d-flex align-items-center gap-3">
+            <% if (profile.picture) { %>
+              <img src="<%= profile.picture %>" alt="Avatar" class="rounded-circle border border-2 border-warning" width="64" height="64" referrerpolicy="no-referrer">
+            <% } else { %>
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning text-dark fw-bold" style="width:64px;height:64px;font-size:22px;">
+                <%= (profile.name || 'C').charAt(0).toUpperCase() %>
+              </div>
+            <% } %>
+            <div>
+              <h4 class="mb-0 fw-bold"><%= profile.name || 'Customer' %></h4>
+              <div class="small opacity-75"><%= profile.email %></div>
+              <span class="badge bg-success mt-1">Google Verified</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3" style="color:#001f4d;">Profile Settings</h5>
+          <p class="text-secondary small mb-4">Add your mobile number and address so we can contact you for orders and delivery.</p>
+          
+          <div id="profileAlert" class="alert d-none"></div>
+          
+          <form id="profileForm">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Full Name</label>
+              <input type="text" id="pfName" class="form-control" value="<%= profile.name || '' %>" maxlength="100">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Email</label>
+              <input type="email" class="form-control" value="<%= profile.email || '' %>" disabled>
+              <div class="form-text">Email comes from Google and cannot be changed here.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Mobile Number *</label>
+              <input type="tel" id="pfPhone" class="form-control" placeholder="10-digit mobile number" value="<%= profile.phone || '' %>" maxlength="10" pattern="[0-9]{10}">
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-bold">Delivery Address *</label>
+              <textarea id="pfAddress" class="form-control" rows="3" placeholder="House no., street, area, city, pincode" maxlength="500"><%= profile.address || '' %></textarea>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button type="submit" class="btn btn-primary fw-bold px-4" style="background:#001f4d;border:none;">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Save Profile
+              </button>
+              <a href="/payment" class="btn btn-outline-warning fw-bold">Payment Gateway</a>
+              <button type="button" id="logoutBtn" class="btn btn-outline-danger ms-auto">Logout</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alertBox = document.getElementById('profileAlert');
+  const body = {
+    name: document.getElementById('pfName').value.trim(),
+    phone: document.getElementById('pfPhone').value.trim(),
+    address: document.getElementById('pfAddress').value.trim()
+  };
+  try {
+    const res = await fetch('/api/auth/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alertBox.className = 'alert alert-success';
+      alertBox.textContent = data.message || 'Profile saved!';
+    } else {
+      alertBox.className = 'alert alert-danger';
+      alertBox.textContent = data.error || 'Update failed';
+    }
+  } catch (err) {
+    alertBox.className = 'alert alert-danger';
+    alertBox.textContent = 'Network error';
+  }
+});
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  window.location.href = '/';
+});
+</script>
+<%- include('partials/footer') %>

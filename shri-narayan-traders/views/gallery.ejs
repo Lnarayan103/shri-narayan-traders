@@ -1,0 +1,150 @@
+<%- include('partials/header') %>
+
+<!-- Banner -->
+<section style="background:var(--navy-grad);border-bottom:3px solid var(--gold);padding:3.5rem 0;margin-bottom:2rem;">
+  <div class="container text-center text-white fade-up">
+    <span class="section-tag text-warning">Showcase</span>
+    <h1 class="font-playfair fw-bold mt-1 mb-2">Completed Projects &amp; Gallery</h1>
+    <p style="color:rgba(255,255,255,.65);">Take a look at our premium aluminium fabrication works and custom furniture layouts.</p>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb justify-content-center mb-0" style="font-size:13px;"><li class="breadcrumb-item"><a href="/" class="text-warning text-decoration-none">Home</a></li><li class="breadcrumb-item active text-white-50">Gallery</li></ol></nav>
+  </div>
+</section>
+
+<div class="container py-4">
+  <!-- Filter Buttons -->
+  <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap fade-up">
+    <button class="btn-outline-gold active filter-btn" data-filter="all">Show All</button>
+    <button class="btn-outline-gold filter-btn" data-filter="furniture">Furniture Fabrication</button>
+    <button class="btn-outline-gold filter-btn" data-filter="aluminium">Aluminium Partition/Doors</button>
+    <button class="btn-outline-gold filter-btn" data-filter="hardware">Hardware Fittings</button>
+    <button class="btn-outline-gold filter-btn" data-filter="projects">Worksites</button>
+  </div>
+
+  <!-- Gallery Grid -->
+  <div class="row g-4 gallery-grid">
+    <% if (items && items.length > 0) { %>
+      <% items.forEach((item, i) => { %>
+        <div class="col-md-4 col-sm-6 gallery-item fade-up" data-category="<%= item.category %>" style="animation-delay: <%= i * 0.05 %>s">
+          <div class="card gallery-card-snt border-0 overflow-hidden h-100 position-relative">
+            <div class="gallery-img-wrapper" style="height: 260px; overflow: hidden; background: #000; position:relative;">
+              <img src="<%= item.image %>" class="w-100 h-100 object-fit-cover transition-transform" alt="<%= item.title %>" loading="lazy">
+              <div class="gallery-overlay">
+                <span class="gallery-overlay-zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+              </div>
+            </div>
+            <div class="card-body bg-white p-3 border-top border-light">
+              <span class="badge text-uppercase mb-2" style="background: rgba(201,146,42,0.12); color: var(--gold-dark); font-weight:700; font-size:10px;"><%= item.category %></span>
+              <h5 class="card-title fw-bold text-dark mb-0" style="font-size: 15px;"><%= item.title %></h5>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="col-12 text-center py-5">
+        <div class="bg-white p-5 rounded shadow-sm border border-light">
+          <i class="fa-solid fa-images text-muted display-2 mb-3" style="opacity:0.25;"></i>
+          <h5 class="text-secondary fw-bold">Gallery is Empty</h5>
+          <p class="text-muted">No showcase images have been uploaded yet.</p>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<style>
+  .btn-outline-gold {
+    background: transparent;
+    border: 1.5px solid rgba(201, 146, 42, 0.5);
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all var(--dur) var(--ease);
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .btn-outline-gold:hover, .btn-outline-gold.active {
+    background: var(--gold-grad);
+    color: var(--navy-deep);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(201, 146, 42, 0.3);
+  }
+  
+  .gallery-card-snt {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid rgba(201, 146, 42, 0.08);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .gallery-card-snt:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 30px rgba(0, 31, 77, 0.1);
+  }
+  .gallery-img-wrapper img {
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  .gallery-card-snt:hover img {
+    transform: scale(1.08);
+  }
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 31, 77, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .gallery-card-snt:hover .gallery-overlay {
+    opacity: 1;
+  }
+  .gallery-overlay-zoom {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gold-grad);
+    color: var(--navy-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(201, 146, 42, 0.45);
+    transform: scale(0.8);
+    transition: transform var(--dur) var(--ease);
+  }
+  .gallery-card-snt:hover .gallery-overlay-zoom {
+    transform: scale(1);
+  }
+</style>
+
+<script>
+  // Simple category filtering
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Toggle active button class
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const filterValue = btn.getAttribute('data-filter');
+      
+      galleryItems.forEach(item => {
+        const itemCategory = item.getAttribute('data-category');
+        if (filterValue === 'all' || itemCategory === filterValue) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+
+<%- include('partials/footer') %>

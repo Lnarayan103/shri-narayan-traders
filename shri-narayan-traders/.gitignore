@@ -1,0 +1,7 @@
+.env
+*.db
+node_modules/
+public/uploads/
+
+backups/
+data/

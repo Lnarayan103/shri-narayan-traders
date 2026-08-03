@@ -1,0 +1,89 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Backup Console" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">Database Backup & Recovery</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Generate complete offline datastore snapshots and restore them instantly</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Download Backup Module -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100 bg-white border-top border-primary border-4 p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="bg-primary-subtle text-primary p-3 rounded-circle"><i class="fa-solid fa-cloud-arrow-down fs-3"></i></div>
+          <h4 class="fw-bold text-dark font-playfair mb-0">Download Snapshot</h4>
+        </div>
+        <p class="text-secondary small leading-relaxed">
+          Creates a structured backup package of your complete business state. This snapshot includes:
+        </p>
+        <ul class="text-secondary small">
+          <li>System accounts & wholesale dealers database</li>
+          <li>Product catalogs & pricing inventory</li>
+          <li>Orders, transactions, and shipping history</li>
+          <li>Customer enquiries & public reviews</li>
+          <li>Global coordinates & website announcements</li>
+        </ul>
+        <div class="mt-auto pt-4">
+          <a href="/api/system/backup" class="btn btn-primary fw-bold w-100"><i class="fa-solid fa-download me-1"></i> Download JSON Backup</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Restore Backup Module -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100 bg-white border-top border-danger border-4 p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="bg-danger-subtle text-danger p-3 rounded-circle"><i class="fa-solid fa-cloud-arrow-up fs-3"></i></div>
+          <h4 class="fw-bold text-dark font-playfair mb-0">Restore Database</h4>
+        </div>
+        <p class="text-secondary small leading-relaxed">
+          Restores your database states using a previously exported backup file.
+        </p>
+        <div class="alert alert-warning p-2 small mb-4">
+          <i class="fa-solid fa-triangle-exclamation text-danger me-1"></i>
+          <strong>WARNING:</strong> Restoring database will drop and clear current active tables to prevent duplicate records.
+        </div>
+        <form id="restoreForm" enctype="multipart/form-data" class="mt-auto">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Select JSON Backup File</label>
+            <input class="form-control" type="file" name="backup" accept=".json" required>
+          </div>
+          <button type="submit" class="btn btn-danger fw-bold w-100"><i class="fa-solid fa-triangle-exclamation me-1"></i> Restore & Overwrite Database</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('restoreForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!confirm('Are you absolutely sure you want to restore? This will drop current tables and replace them with the backup data.')) return;
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      const response = await fetch('/api/system/restore', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert(result.message || 'Database restored successfully!');
+        window.location.href = '/admin/dashboard';
+      } else {
+        alert(result.error || 'Failed to restore database.');
+      }
+    } catch(err) {
+      alert('Error communicating with backup API endpoint.');
+    }
+  });
+</script>
+
+<%- include('../partials/admin-footer') %>

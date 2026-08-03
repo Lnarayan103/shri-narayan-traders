@@ -1,0 +1,270 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Settings" %>
+
+<div class="admin-content">
+  <div class="mb-4">
+    <h4 class="font-playfair mb-0">Website Settings</h4>
+    <p class="text-muted mb-0" style="font-size:13px">All changes reflect live on the website instantly</p>
+  </div>
+
+  <div id="settingsAlert"></div>
+
+  <form id="settingsForm">
+    <div class="row g-4">
+
+      <!-- Business Info -->
+      <div class="col-lg-8">
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-building me-2 text-warning"></i>Business Information</h5></div>
+          <div style="padding:1.25rem;">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label-admin">Business Name *</label><input type="text" name="businessName" class="form-control-admin" value="<%= settings.businessName %>" required /></div>
+              <div class="col-md-6"><label class="form-label-admin">Business Name (Hindi)</label><input type="text" name="businessNameHindi" class="form-control-admin" value="<%= settings.businessNameHindi||'' %>" placeholder="श्री नारायण ट्रेडर्स" /></div>
+              <div class="col-md-6"><label class="form-label-admin">GSTIN</label><input type="text" name="gstin" class="form-control-admin" value="<%= settings.gstin||'' %>" placeholder="22AAAAA0000A1Z5" /></div>
+              <div class="col-md-6"><label class="form-label-admin">Registration No.</label><input type="text" name="regNo" class="form-control-admin" value="<%= settings.regNo||'' %>" /></div>
+              <div class="col-12"><label class="form-label-admin">Full Address *</label><textarea name="address" class="form-control-admin" rows="2" required><%= settings.address %></textarea></div>
+              <div class="col-md-4"><label class="form-label-admin">City</label><input type="text" name="city" class="form-control-admin" value="<%= settings.city||'' %>" /></div>
+              <div class="col-md-4"><label class="form-label-admin">State</label><input type="text" name="state" class="form-control-admin" value="<%= settings.state||'' %>" /></div>
+              <div class="col-md-4"><label class="form-label-admin">PIN Code</label><input type="text" name="pincode" class="form-control-admin" value="<%= settings.pincode||'' %>" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-address-book me-2 text-warning"></i>Contact Details</h5></div>
+          <div style="padding:1.25rem;">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label-admin">Phone Number(s) *</label><input type="text" name="phone" class="form-control-admin" value="<%= settings.phone %>" placeholder="+91 98765 43210, +91 98765 43211" required /></div>
+              <div class="col-md-6"><label class="form-label-admin">WhatsApp Number (digits only)</label><input type="text" name="whatsapp" class="form-control-admin" value="<%= settings.whatsapp||'' %>" placeholder="919876543210" /></div>
+              <div class="col-md-6"><label class="form-label-admin">Email Address *</label><input type="email" name="email" class="form-control-admin" value="<%= settings.email %>" required /></div>
+              <div class="col-md-6"><label class="form-label-admin">Website URL</label><input type="text" name="website" class="form-control-admin" value="<%= settings.website||'' %>" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-map-location-dot me-2 text-warning"></i>Google Maps</h5></div>
+          <div style="padding:1.25rem;">
+            <label class="form-label-admin">Google Maps Embed URL</label>
+            <textarea name="mapEmbedUrl" class="form-control-admin" rows="3" placeholder="Paste the src URL from Google Maps > Share > Embed a map"><%= settings.mapEmbedUrl||'' %></textarea>
+            <p style="font-size:11.5px;color:var(--text-muted);margin-top:.4rem;"><i class="fa-solid fa-circle-info me-1"></i> Go to Google Maps → Search your store → Share → Embed a map → Copy the <code>src="..."</code> URL only and paste here.</p>
+            <div class="row g-3 mt-1">
+              <div class="col-md-6"><label class="form-label-admin">Latitude</label><input type="text" name="lat" class="form-control-admin" value="<%= settings.lat||'' %>" placeholder="25.3749" /></div>
+              <div class="col-md-6"><label class="form-label-admin">Longitude</label><input type="text" name="lng" class="form-control-admin" value="<%= settings.lng||'' %>" placeholder="86.4721" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-share-nodes me-2 text-warning"></i>Social Media</h5></div>
+          <div style="padding:1.25rem;">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label-admin"><i class="fa-brands fa-facebook me-1"></i> Facebook URL</label><input type="text" name="facebook" class="form-control-admin" value="<%= settings.facebook||'' %>" placeholder="https://facebook.com/..." /></div>
+              <div class="col-md-6"><label class="form-label-admin"><i class="fa-brands fa-instagram me-1"></i> Instagram URL</label><input type="text" name="instagram" class="form-control-admin" value="<%= settings.instagram||'' %>" placeholder="https://instagram.com/..." /></div>
+              <div class="col-md-6"><label class="form-label-admin"><i class="fa-brands fa-youtube me-1"></i> YouTube URL</label><input type="text" name="youtube" class="form-control-admin" value="<%= settings.youtube||'' %>" placeholder="https://youtube.com/..." /></div>
+              <div class="col-md-6"><label class="form-label-admin"><i class="fa-brands fa-x-twitter me-1"></i> Twitter / X URL</label><input type="text" name="twitter" class="form-control-admin" value="<%= settings.twitter||'' %>" placeholder="https://twitter.com/..." /></div>
+              <div class="col-md-12"><label class="form-label-admin"><i class="fa-solid fa-star text-warning me-1"></i> Google Business Review Link</label><input type="text" name="googleReviewLink" class="form-control-admin" value="<%= settings.googleReviewLink||'' %>" placeholder="https://g.page/r/.../review" /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="col-lg-4">
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-globe me-2 text-warning"></i>Homepage Text</h5></div>
+          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;">
+            <div><label class="form-label-admin">Hero Banner Tagline</label><input type="text" name="heroBannerText" class="form-control-admin" value="<%= settings.heroBannerText||'' %>" placeholder="Hardware · Furniture · Aluminium" /></div>
+            <div><label class="form-label-admin">Hero Subtitle</label><textarea name="heroSubtitle" class="form-control-admin" rows="3" placeholder="Premium supplier of..."><%= settings.heroSubtitle||'' %></textarea></div>
+            <div><label class="form-label-admin">Announcement Bar Text</label><input type="text" name="announcementBar" class="form-control-admin" value="<%= settings.announcementBar||'' %>" placeholder="Free delivery on orders above ₹5000!" /></div>
+          </div>
+        </div>
+
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-wand-magic-sparkles me-2 text-warning"></i>AI Services (OpenRouter)</h5></div>
+          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;">
+            <div>
+              <label class="form-label-admin">OpenRouter API Key</label>
+              <input type="password" id="openRouterApiKeyInput" name="openRouterApiKey" class="form-control-admin" value="<%= settings.openRouterApiKey || '' %>" placeholder="OpenRouter API Key (starts with sk-or...)" />
+              <p style="font-size:11.5px;color:var(--text-muted);margin-top:.4rem;line-height:1.4;"><i class="fa-solid fa-circle-info me-1"></i> Paste your API key from openrouter.ai. Leave empty to disable AI features and fall back to local offline mock generation.</p>
+            </div>
+            <div>
+              <label class="form-label-admin">OpenRouter Model</label>
+              <input type="text" name="openRouterModel" class="form-control-admin" value="<%= settings.openRouterModel || 'google/gemini-2.5-flash' %>" placeholder="google/gemini-2.5-flash" />
+              <p style="font-size:11.5px;color:var(--text-muted);margin-top:.4rem;line-height:1.4;"><i class="fa-solid fa-circle-info me-1"></i> Model identifier (e.g. <code>google/gemini-2.5-flash</code> or <code>meta-llama/llama-3-8b-instruct:free</code>).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email System SMTP & AI Card -->
+        <div class="admin-card mb-3">
+          <div class="admin-card-header">
+            <div class="d-flex justify-content-between align-items-center w-100" style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+              <h5 class="mb-0"><i class="fa-solid fa-envelope me-2 text-warning"></i>Email System (SMTP & AI)</h5>
+              <span class="badge bg-warning text-dark">✨ AI Active</span>
+            </div>
+          </div>
+          <div style="padding:1.25rem;">
+            <p class="text-muted mb-3" style="font-size:11.5px; line-height:1.4; margin-bottom: 1rem;">
+              Email content is dynamically generated by OpenRouter AI based on context. Falls back to templates if AI unavailable.
+            </p>
+            
+            <div class="mb-3">
+              <label class="form-label-admin">Gmail User (Sender Address)</label>
+              <input type="email" id="smtpUserVal" class="form-control-admin" value="<%= settings.email || 'laxminarayan34939@gmail.com' %>" disabled />
+              <small class="text-muted" style="font-size:11px;">Uses the business email configured in contact details.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label-admin">Gmail App Password</label>
+              <input type="password" class="form-control-admin" placeholder="Set SMTP_PASS / GMAIL_APP_PASS in .env file" disabled value="<%= (process.env.SMTP_PASS || process.env.GMAIL_APP_PASS) ? '••••••••••••••••' : '' %>" />
+              <small class="text-muted" style="font-size:11px;">To enable actual sending, ensure <code>SMTP_PASS</code> or <code>GMAIL_APP_PASS</code> is defined in <code>.env</code>.</small>
+            </div>
+            
+            <hr class="my-3" style="border-top:1px solid #e2e8f0; margin-top: 1rem; margin-bottom: 1rem;" />
+            
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+              <label class="form-label-admin">Send Test Email To</label>
+              <div class="d-flex gap-2" style="display:flex; gap:0.5rem;">
+                <input type="email" id="testEmailRecipient" class="form-control-admin" placeholder="recipient@example.com" value="<%= settings.email || 'laxminarayan34939@gmail.com' %>" />
+                <button type="button" id="sendTestEmailBtn" class="btn-admin-primary" style="padding: 0 15px; height: 36px; white-space: nowrap; margin-top: 0;">
+                  <i class="fa-solid fa-paper-plane me-1"></i> Send Test
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-file-invoice me-2 text-warning"></i>Billing / GST</h5></div>
+          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;">
+            <div><label class="form-label-admin">Invoice Prefix</label><input type="text" name="invoicePrefix" class="form-control-admin" value="<%= settings.invoicePrefix||'SNT' %>" /></div>
+            <div><label class="form-label-admin">Default GST (%)</label><select name="defaultGst" class="form-control-admin"><% [0,5,12,18,28].forEach(r=>{%><option value="<%= r %>" <%=settings.defaultGst==r?'selected':''%>><%=r%>%</option><%})%></select></div>
+            <div><label class="form-label-admin">Bank Account Name</label><input type="text" name="bankName" class="form-control-admin" value="<%= settings.bankName||'' %>" /></div>
+            <div><label class="form-label-admin">Account Number</label><input type="text" name="bankAccount" class="form-control-admin" value="<%= settings.bankAccount||'' %>" /></div>
+            <div><label class="form-label-admin">IFSC Code</label><input type="text" name="bankIfsc" class="form-control-admin" value="<%= settings.bankIfsc||'' %>" /></div>
+            <div><label class="form-label-admin">UPI ID</label><input type="text" name="upiId" class="form-control-admin" value="<%= settings.upiId||'' %>" placeholder="yourname@paytm" /></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-admin-primary w-100 justify-content-center" style="display:flex;padding:13px;">
+          <i class="fa-solid fa-floppy-disk me-2"></i> Save All Settings
+        </button>
+      </div>
+
+    </div>
+  </form>
+
+  <!-- Change Password Section -->
+  <div class="row g-4 mt-3">
+    <div class="col-lg-8">
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-key me-2 text-warning"></i>Change Account Password</h5></div>
+        <div style="padding:1.25rem;">
+          <form id="passwordForm">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label-admin">Current Password *</label>
+                <input type="password" id="currentPassword" class="form-control-admin" required placeholder="Enter current password" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">New Password *</label>
+                <input type="password" id="newPassword" class="form-control-admin" required placeholder="Min 6 characters" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Confirm New Password *</label>
+                <input type="password" id="confirmPassword" class="form-control-admin" required placeholder="Re-type new password" />
+              </div>
+              <div class="col-12 mt-2">
+                <button type="submit" class="btn-admin-primary">
+                  <i class="fa-solid fa-shield-halved me-2"></i> Update Password
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const fd = new FormData(this);
+  const body = Object.fromEntries(fd.entries());
+  try {
+    const res = await fetch('/api/settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) adminToast('✅ Settings saved successfully!', 'success');
+    else throw new Error(data.message);
+  } catch(err) { adminToast('Error: ' + err.message, 'error'); }
+});
+
+document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  
+  if (newPassword !== confirmPassword) {
+    adminToast('Error: New passwords do not match!', 'error');
+    return;
+  }
+  if (newPassword.length < 6) {
+    adminToast('Error: New password must be at least 6 characters!', 'error');
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/auth/change-password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+    const result = await res.json();
+    if (res.ok) {
+      adminToast('✅ Password changed successfully!', 'success');
+      this.reset();
+    } else {
+      throw new Error(result.error || 'Failed to update password.');
+    }
+  } catch(err) {
+    adminToast(err.message, 'error');
+  }
+});
+
+document.getElementById('sendTestEmailBtn').addEventListener('click', async function() {
+  const recipient = document.getElementById('testEmailRecipient').value.trim();
+  if (!recipient) {
+    adminToast('Error: Recipient email is required!', 'error');
+    return;
+  }
+  
+  const btn = this;
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> Sending...';
+  
+  try {
+    const res = await fetch('/api/settings/test-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipient })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      adminToast('✅ ' + (data.message || 'Test email sent successfully! Check inbox.'), 'success');
+    } else {
+      throw new Error(data.error || 'Failed to send test email.');
+    }
+  } catch (err) {
+    adminToast('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+});
+</script>
+
+<%- include('../partials/admin-footer') %>

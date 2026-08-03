@@ -1,0 +1,40 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Homepage Editor" %>
+<div class="admin-content">
+  <div class="mb-4"><h4 class="font-playfair mb-0">Homepage Editor</h4><p class="text-muted mb-0" style="font-size:13px">Control what appears on the homepage</p></div>
+  <div id="hpAlert"></div>
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-star me-2 text-warning"></i>Featured Products on Home</h5></div>
+        <div style="padding:1.25rem;">
+          <p style="font-size:13px;color:var(--text-muted);">Mark products as "Featured" from the <a href="/admin/products" style="color:var(--gold-dark)">Products page</a> — they will automatically appear on the homepage.</p>
+          <a href="/admin/products" class="btn-admin-primary"><i class="fa-solid fa-boxes-stacked me-1"></i> Manage Products</a>
+        </div>
+      </div>
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-tag me-2 text-warning"></i>Active Offers on Home</h5></div>
+        <div style="padding:1.25rem;">
+          <p style="font-size:13px;color:var(--text-muted);">All active offers are shown on the homepage automatically.</p>
+          <a href="/admin/offers" class="btn-admin-primary"><i class="fa-solid fa-tag me-1"></i> Manage Offers</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-text-height me-2 text-warning"></i>Homepage Texts</h5></div>
+        <div style="padding:1.25rem;">
+          <p style="font-size:13px;color:var(--text-muted);">Edit hero tagline, subtitle, and announcement bar from <a href="/admin/settings" style="color:var(--gold-dark)">Settings</a>.</p>
+          <a href="/admin/settings" class="btn-admin-primary"><i class="fa-solid fa-gear me-1"></i> Go to Settings</a>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-images me-2 text-warning"></i>Gallery / Banners</h5></div>
+        <div style="padding:1.25rem;">
+          <a href="/admin/gallery" class="btn-admin-primary"><i class="fa-solid fa-images me-1"></i> Manage Gallery</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/admin-footer') %>

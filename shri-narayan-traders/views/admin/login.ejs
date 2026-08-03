@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="bg-white p-4 p-md-5 rounded shadow-sm border border-top border-warning border-3">
+        <div class="text-center mb-4">
+          <i class="fa-solid fa-lock text-warning display-4 mb-2"></i>
+          <h2 class="fw-bold text-dark font-playfair">Admin Control</h2>
+          <p class="text-secondary small text-uppercase" style="letter-spacing: 1px;">Sign in to access admin panel settings</p>
+        </div>
+
+        <div id="adminAlert" class="alert d-none"></div>
+
+        <form id="adminForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Admin Username</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-user-shield text-muted"></i></span>
+              <input type="text" id="adminUser" class="form-control" placeholder="Enter username" required>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label fw-bold">Secret Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-key text-muted"></i></span>
+              <input type="password" id="adminPass" class="form-control" placeholder="Enter password" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-dark w-100 py-2.5 fw-bold mb-3" style="background-color: var(--primary-blue); border: none;">Authorize Access</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('adminForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById('adminAlert');
+    alertBox.className = 'alert d-none';
+    
+    const username = document.getElementById('adminUser').value;
+    const password = document.getElementById('adminPass').value;
+    
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        const allowedRoles = ['admin', 'super-admin', 'manager', 'sales'];
+        if (!allowedRoles.includes(result.role)) {
+          alertBox.className = 'alert alert-danger';
+          alertBox.innerText = 'Unauthorized. Admin access required.';
+          return;
+        }
+        alertBox.className = 'alert alert-success';
+        alertBox.innerText = 'Authorization successful! Entering control board...';
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard';
+        }, 1000);
+      } else {
+        alertBox.className = 'alert alert-danger';
+        alertBox.innerText = result.error || 'Invalid admin credentials.';
+      }
+    } catch (err) {
+      alertBox.className = 'alert alert-danger';
+      alertBox.innerText = 'Network connection failed.';
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

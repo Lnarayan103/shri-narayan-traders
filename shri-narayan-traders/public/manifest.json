@@ -1,0 +1,22 @@
+{
+  "name": "Shri Narayan Traders",
+  "short_name": "SNT Portal",
+  "description": "Enterprise Portal & Operations App for Shri Narayan Traders",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#002d62",
+  "theme_color": "#002d62",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/192/000000/hammer.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/000000/hammer.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

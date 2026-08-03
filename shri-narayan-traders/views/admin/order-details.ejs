@@ -1,0 +1,156 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Order Details" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="/admin/orders" class="text-decoration-none text-muted" style="font-size: 13px;"><i class="fa-solid fa-arrow-left me-1"></i> Back to Orders</a>
+      <h4 class="font-playfair mb-0 mt-1">Order Details</h4>
+    </div>
+    <div style="display:flex;gap:.5rem;">
+      <button onclick="window.open('/api/orders/<%= order._id %>/invoice', '_blank')" class="btn-admin-primary"><i class="fa-solid fa-print me-1"></i> Print GST Invoice</button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Main Order Details -->
+    <div class="col-lg-8">
+      <div class="admin-card mb-4">
+        <div class="admin-card-header">
+          <h5><i class="fa-solid fa-receipt me-2 text-warning"></i>Order Items</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(order.items && order.items.length > 0) { %>
+                <% order.items.forEach(item => { %>
+                <tr>
+                  <td>
+                    <span class="fw-bold text-navy"><%= item.name %></span>
+                  </td>
+                  <td class="text-center">₹<%= (item.price || 0).toLocaleString('en-IN') %></td>
+                  <td class="text-center"><%= item.qty %></td>
+                  <td class="text-end fw-bold text-navy">₹<%= (item.total || 0).toLocaleString('en-IN') %></td>
+                </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="4" class="text-center text-muted py-4">No items in this order</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Financial Summary -->
+        <div class="p-4 bg-light border-top" style="border-radius:0 0 14px 14px;">
+          <div class="d-flex justify-content-end">
+            <div style="width: 300px;">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal:</span>
+                <span class="fw-semibold">₹<%= (order.subtotal || 0).toLocaleString('en-IN') %></span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">GST (<%= order.gstRate || 18 %>%):</span>
+                <span class="fw-semibold">₹<%= (order.gstAmount || 0).toLocaleString('en-IN') %></span>
+              </div>
+              <div class="d-flex justify-content-between border-top pt-2">
+                <span class="fw-bold text-navy" style="font-size:16px;">Total Amount:</span>
+                <span class="fw-bold text-navy" style="font-size:16px;">₹<%= (order.totalAmount || 0).toLocaleString('en-IN') %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar - Customer Info & Order Status -->
+    <div class="col-lg-4">
+      <!-- Status Card -->
+      <div class="admin-card mb-4">
+        <div class="admin-card-header">
+          <h5><i class="fa-solid fa-bars-progress me-2 text-warning"></i>Order Status</h5>
+        </div>
+        <div style="padding: 1.25rem;">
+          <div class="mb-3">
+            <label class="form-label-admin d-block mb-1" style="font-weight: 700;">Order ID</label>
+            <code style="font-size:15px;background:var(--cream);padding:4px 8px;border-radius:5px;font-weight:700;"><%= order.orderId %></code>
+          </div>
+          <div class="mb-3">
+            <label class="form-label-admin d-block mb-1" style="font-weight: 700;">Current Status</label>
+            <% const statusColor = {pending:'#f59e0b',confirmed:'#3b82f6',processing:'#8b5cf6',shipped:'#06b6d4',delivered:'#16a34a',cancelled:'#dc2626'}[order.status] || '#64748b'; %>
+            <span class="status-badge" style="background:<%=statusColor%>22;color:<%=statusColor%>;border:1px solid <%=statusColor%>;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:700;text-transform:capitalize;">
+              <%= order.status %>
+            </span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label-admin d-block mb-1" style="font-weight: 700;">Date Placed</label>
+            <span style="font-size: 13.5px;"><%= new Date(order.createdAt).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) %></span>
+          </div>
+          <div class="mb-4 pt-2 border-top">
+            <label class="form-label-admin d-block mb-2" style="font-weight: 700;">Change Status</label>
+            <select class="form-control-admin mb-2" id="orderStatusSelect" style="font-size:13.5px;">
+              <% ['pending','confirmed','processing','shipped','delivered','cancelled','repair','replacement','exchange'].forEach(s => { %>
+              <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1) %></option>
+              <% }) %>
+            </select>
+            <button onclick="updateOrderStatus()" class="btn-admin-primary w-100" style="font-size:13px;padding:8px;"><i class="fa-solid fa-save me-1"></i> Update Status</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Info Card -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h5><i class="fa-solid fa-user me-2 text-warning"></i>Customer Info</h5>
+        </div>
+        <div style="padding: 1.25rem; font-size:13.5px;">
+          <div class="mb-3">
+            <span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:2px;">Name / Business</span>
+            <div class="fw-bold text-navy"><%= order.dealerName || 'Walk-in Customer' %></div>
+          </div>
+          <div class="mb-3">
+            <span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:2px;">Contact Phone</span>
+            <div><a href="tel:<%= order.dealerPhone %>" style="color:var(--navy);text-decoration:none;font-weight:600;"><i class="fa-solid fa-phone me-1 text-muted"></i><%= order.dealerPhone || '—' %></a></div>
+          </div>
+          <% if(order.dealerGstin) { %>
+          <div class="mb-3">
+            <span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:2px;">GSTIN</span>
+            <code style="font-weight: 600;"><%= order.dealerGstin %></code>
+          </div>
+          <% } %>
+          <div class="mb-2">
+            <span class="text-muted d-block" style="font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:2px;">Shipping Address</span>
+            <div class="bg-light p-2 rounded" style="border:1px solid rgba(0,0,0,.04);font-family:monospace;font-size:12.5px;white-space:pre-wrap;"><%= order.shippingAddress || 'Self Pickup' %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function updateOrderStatus() {
+  const status = document.getElementById('orderStatusSelect').value;
+  const res = await fetch(`/api/orders/<%= order._id %>/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  if (res.ok) {
+    adminToast('Order status updated successfully', 'success');
+    setTimeout(() => window.location.reload(), 1000);
+  } else {
+    const data = await res.json();
+    adminToast(data.error || 'Failed to update status', 'error');
+  }
+}
+</script>
+
+<%- include('../partials/admin-footer') %>

@@ -1,0 +1,5 @@
+FINAL WEBSITE — Shri Narayan Traders
+This is the CURRENT deployable website folder.
+Main file: index.js
+Includes: Customer OTP (WhatsApp via AI bot), Google login, Admin panel, Products/Orders, UPI payment.
+OTP connects to AI bot at /api/send-otp and /api/verify-otp.

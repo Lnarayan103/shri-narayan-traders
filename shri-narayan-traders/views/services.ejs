@@ -1,0 +1,374 @@
+<%- include('partials/header') %>
+
+<style>
+  /* Premium Colors & Custom Variables */
+  :root {
+    --brand-navy: #0d1b2a;
+    --brand-gold: #c5a880;
+    --brand-gold-dark: #b39268;
+    --card-glow-primary: rgba(13, 110, 253, 0.12);
+    --card-glow-warning: rgba(255, 193, 7, 0.12);
+    --card-glow-info: rgba(13, 202, 240, 0.12);
+  }
+
+  /* Smooth dynamic animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hero Section styling */
+  .services-hero {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 0;
+  }
+  
+  .services-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .services-hero h1 {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    letter-spacing: -0.5px;
+  }
+
+  .services-hero p {
+    animation: fadeInUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Premium Card Styles */
+  .premium-service-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 16px !important;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .premium-service-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .card-primary::after { background: var(--bs-primary); }
+  .card-warning::after { background: var(--bs-warning); }
+  .card-info::after { background: var(--bs-info); }
+
+  .premium-service-card:hover {
+    transform: translateY(-8px);
+    border-color: transparent !important;
+  }
+
+  .card-primary:hover {
+    box-shadow: 0 20px 40px var(--card-glow-primary);
+  }
+  .card-warning:hover {
+    box-shadow: 0 20px 40px var(--card-glow-warning);
+  }
+  .card-info:hover {
+    box-shadow: 0 20px 40px var(--card-glow-info);
+  }
+
+  /* Icon Wrappers */
+  .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-primary .icon-wrapper {
+    background: rgba(13, 110, 253, 0.08);
+    color: var(--bs-primary);
+  }
+  .card-warning .icon-wrapper {
+    background: rgba(255, 193, 7, 0.08);
+    color: var(--bs-warning);
+  }
+  .card-info .icon-wrapper {
+    background: rgba(13, 202, 240, 0.08);
+    color: var(--bs-info);
+  }
+
+  .premium-service-card:hover .icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  /* Feature Lists */
+  .feature-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+    transition: transform 0.2s ease;
+  }
+
+  .feature-list li:hover {
+    transform: translateX(4px);
+  }
+
+  .feature-list i {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* Process Timeline */
+  .process-step {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--brand-navy);
+    color: var(--brand-gold);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .process-step:hover .step-number {
+    background: var(--brand-gold);
+    color: var(--brand-navy);
+    transform: scale(1.08);
+  }
+
+  /* CTA Banner */
+  .cta-banner {
+    background: linear-gradient(135deg, #1b263b 0%, #0d1b2a 100%);
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(13, 27, 42, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+</style>
+
+<!-- Services Hero Section -->
+<section class="services-hero text-center text-white">
+  <div class="container position-relative z-1">
+    <h1 class="display-4 fw-bold font-playfair mb-3">Our Services & Solutions</h1>
+    <p class="lead text-gold font-playfair fs-5 mb-0" style="letter-spacing: 1px; color: var(--brand-gold);">
+      From structural aluminium fabrications to modular wooden furniture layouts.
+    </p>
+  </div>
+</section>
+
+<!-- Services Details Grid -->
+<section class="py-5 bg-light">
+  <div class="container py-4">
+    <div class="row g-4 justify-content-center">
+      <!-- Service 1: Aluminium Fabrication -->
+      <div class="col-lg-4 col-md-6 d-flex">
+        <div class="premium-service-card card-primary p-4 shadow-sm h-100 d-flex flex-column justify-content-between">
+          <div>
+            <div class="icon-wrapper">
+              <i class="fa-solid fa-border-all fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-dark font-playfair mb-3">Aluminium Fabrication Works</h4>
+            <p class="text-secondary small leading-relaxed mb-4">
+              We customize, assemble, and install high-grade aluminium structural layouts. Our services cover sliding frames, doors, shopfronts, and partition cabins.
+            </p>
+            <ul class="list-unstyled feature-list mb-0">
+              <li><i class="fa-solid fa-check"></i> Sliding & Swing Window Frames</li>
+              <li><i class="fa-solid fa-check"></i> Glass Partition Walls</li>
+              <li><i class="fa-solid fa-check"></i> Modular Office Cabins & Panels</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-top">
+            <a href="/contact#enquiryForm" class="btn btn-outline-primary w-100 btn-sm fw-bold py-2">Inquire Pricing</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Service 2: Furniture Manufacturing -->
+      <div class="col-lg-4 col-md-6 d-flex">
+        <div class="premium-service-card card-warning p-4 shadow-sm h-100 d-flex flex-column justify-content-between">
+          <div>
+            <div class="icon-wrapper">
+              <i class="fa-solid fa-couch fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-dark font-playfair mb-3">Furniture Manufacturing</h4>
+            <p class="text-secondary small leading-relaxed mb-4">
+              Custom wood and steel furniture designed for modern houses and official spaces. We build for style, utility, and heavy load capacities.
+            </p>
+            <ul class="list-unstyled feature-list mb-0">
+              <li><i class="fa-solid fa-check"></i> Bed frames & Dining tables</li>
+              <li><i class="fa-solid fa-check"></i> Office ergonomic chairs & tables</li>
+              <li><i class="fa-solid fa-check"></i> Custom modular storage wardrobes</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-top">
+            <a href="/contact#enquiryForm" class="btn btn-outline-warning w-100 btn-sm fw-bold py-2 text-dark">Inquire Pricing</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Service 3: Hardware Supply -->
+      <div class="col-lg-4 col-md-6 d-flex">
+        <div class="premium-service-card card-info p-4 shadow-sm h-100 d-flex flex-column justify-content-between">
+          <div>
+            <div class="icon-wrapper">
+              <i class="fa-solid fa-screwdriver-wrench fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-dark font-playfair mb-3">Wholesale Hardware Supplies</h4>
+            <p class="text-secondary small leading-relaxed mb-4">
+              Direct manufacturer rate supplier of building materials, locks, screws, handles, and modular cabinet hardware items.
+            </p>
+            <ul class="list-unstyled feature-list mb-0">
+              <li><i class="fa-solid fa-check"></i> Designer door handles & main locks</li>
+              <li><i class="fa-solid fa-check"></i> Frame rollers & hinges accessories</li>
+              <li><i class="fa-solid fa-check"></i> Construction screws & mounting bolts</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-top">
+            <a href="/contact#enquiryForm" class="btn btn-outline-info w-100 btn-sm fw-bold py-2 text-dark">Inquire Pricing</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust & Quality Highlights -->
+<section class="py-5 bg-white border-top border-bottom">
+  <div class="container text-center py-3">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <i class="fa-solid fa-gem text-warning fs-1"></i>
+          <div class="text-start">
+            <h5 class="fw-bold mb-0 text-dark">100% Quality Assurance</h5>
+            <small class="text-muted">Premium materials, robust assembly</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <i class="fa-solid fa-handshake text-primary fs-1"></i>
+          <div class="text-start">
+            <h5 class="fw-bold mb-0 text-dark">Trusted Partnership</h5>
+            <small class="text-muted">Transparent terms, direct factory rates</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <i class="fa-solid fa-truck-fast text-success fs-1"></i>
+          <div class="text-start">
+            <h5 class="fw-bold mb-0 text-dark">On-Time Execution</h5>
+            <small class="text-muted">Streamlined pipeline & prompt deliveries</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Our Working Process Section -->
+<section class="py-5 bg-light">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold font-playfair text-dark">Our Execution Blueprint</h2>
+      <p class="text-secondary col-lg-6 mx-auto">How we deliver high-quality fabrication and customized modular furniture designs.</p>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="process-step">
+          <div class="step-number">01</div>
+          <h5 class="fw-bold text-dark mb-2">Requirement Consultation</h5>
+          <p class="text-secondary small col-lg-10 mx-auto">We analyze your project dimensions, aesthetic styles, load factors, and load constraints carefully.</p>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="process-step">
+          <div class="step-number">02</div>
+          <h5 class="fw-bold text-dark mb-2">Custom Design & Quoting</h5>
+          <p class="text-secondary small col-lg-10 mx-auto">Our designers construct mockups and calculate detailed itemized pricing transparently.</p>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="process-step">
+          <div class="step-number">03</div>
+          <h5 class="fw-bold text-dark mb-2">Precision Execution</h5>
+          <p class="text-secondary small col-lg-10 mx-auto">Skilled craftsmen build and assemble configurations under strict quality inspection.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bottom CTA Banner -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="cta-banner text-white p-5 text-center">
+      <div class="py-2 col-lg-8 mx-auto">
+        <h2 class="fw-bold font-playfair mb-3" style="color: var(--brand-gold);">Ready to build your next space configuration?</h2>
+        <p class="lead mb-4 text-white-50 fs-6">Let us provide you with the finest aluminium fabrications and modular furniture items at factory wholesale pricing.</p>
+        <a href="/contact#enquiryForm" class="btn btn-warning px-4 py-2.5 fw-bold text-dark rounded-pill border-0 shadow">
+          Get a Custom Quote <i class="fa-solid fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
+

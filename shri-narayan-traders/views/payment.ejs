@@ -1,0 +1,135 @@
+<%- include('partials/header') %>
+<div class="container py-5" style="min-height:70vh;">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color:#001f4d;">Payment Gateway</h2>
+        <div style="height:3px;width:60px;background:linear-gradient(90deg,#c9922a,#d4af37);margin:10px auto;"></div>
+        <p class="text-secondary">Secure UPI payments for Shri Narayan Traders</p>
+      </div>
+
+      <% if (!settings.upiId) { %>
+        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center gap-3" role="alert">
+          <i class="fa-solid fa-triangle-exclamation fa-2x text-warning"></i>
+          <div>
+            <strong class="d-block">UPI ID not configured yet</strong>
+            Please use WhatsApp or call for order payment. (Admin: set the UPI ID in Admin &rarr; Settings.)
+          </div>
+        </div>
+      <% } else { %>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+          <div class="card-body p-4 p-md-5">
+            <div class="row g-4 align-items-center">
+              <div class="col-md-5 text-center">
+                <div id="qrWrap" class="d-inline-block p-3 bg-white rounded-4 border">
+                  <img id="upiQrImg" src="" alt="UPI QR Code" width="220" height="220" style="max-width:100%;">
+                </div>
+                <p class="small text-muted mt-2 mb-0"><i class="fa-solid fa-qrcode me-1"></i> Scan with any UPI app</p>
+              </div>
+              <div class="col-md-7">
+                <% if (order) { %>
+                  <div class="mb-3 p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                    <div class="small text-muted text-uppercase fw-bold mb-1">Paying for Order</div>
+                    <div class="fw-bold" style="font-family:monospace;font-size:1.05rem;color:#001f4d;"><%= order.orderId %></div>
+                  </div>
+                <% } %>
+                <label for="payAmount" class="form-label small fw-bold text-secondary text-uppercase">Amount (₹)</label>
+                <input type="number" id="payAmount" class="form-control form-control-lg mb-3" min="1" step="0.01"
+                       value="<%= order ? order.totalAmount : '' %>" placeholder="Enter amount">
+
+                <label for="payNote" class="form-label small fw-bold text-secondary text-uppercase">Note (optional)</label>
+                <input type="text" id="payNote" class="form-control mb-3" maxlength="50"
+                       value="<%= order ? order.orderId : '' %>" placeholder="e.g. Order reference">
+
+                <a id="upiPayBtn" href="#" class="btn btn-lg w-100 fw-bold mb-2" style="background:#001f4d;color:#fff;">
+                  <i class="fa-solid fa-mobile-screen-button me-2"></i> Pay via UPI App
+                </a>
+                <p class="small text-muted mb-0"><i class="fa-solid fa-circle-info me-1"></i> "Pay via UPI App" works best on your phone. On desktop, scan the QR instead.</p>
+
+                <hr class="my-3">
+                <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                  <div>
+                    <div class="small text-muted text-uppercase fw-bold" style="font-size:10.5px;">UPI ID</div>
+                    <div class="fw-bold" style="font-family:monospace;"><%= settings.upiId %></div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyUpi()"><i class="fa-regular fa-copy me-1"></i>Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm text-center p-4">
+            <i class="fa-brands fa-google-pay fa-3x mb-3 text-primary"></i>
+            <h6 class="fw-bold">UPI / GPay / PhonePe</h6>
+            <p class="small text-success mb-0 fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Available Now</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm text-center p-4">
+            <i class="fa-solid fa-credit-card fa-3x mb-3 text-success"></i>
+            <h6 class="fw-bold">Cards</h6>
+            <p class="small text-muted mb-0">Coming Soon</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm text-center p-4">
+            <i class="fa-solid fa-building-columns fa-3x mb-3 text-secondary"></i>
+            <h6 class="fw-bold">Net Banking</h6>
+            <p class="small text-muted mb-0">Coming Soon</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm p-4">
+        <h5 class="fw-bold mb-3" style="color:#001f4d;">Pay Offline / Direct</h5>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><i class="fa-brands fa-whatsapp text-success me-2"></i> WhatsApp: <a href="https://wa.me/919771233843">9771233843</a></li>
+          <li class="mb-2"><i class="fa-solid fa-phone text-primary me-2"></i> Call: <a href="tel:8340262401">8340262401</a></li>
+          <li class="mb-2"><i class="fa-solid fa-envelope text-danger me-2"></i> Email: laxminarayan34939@gmail.com</li>
+          <li><i class="fa-solid fa-location-dot text-warning me-2"></i> Showroom: Kaura Maidan, Near IDBI Bank, Munger, Bihar</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (settings.upiId) { %>
+<script>
+const UPI_ID = <%- JSON.stringify(settings.upiId) %>;
+const PAYEE_NAME = <%- JSON.stringify(settings.businessName || 'Shri Narayan Traders') %>;
+
+function buildUpiLink() {
+  const amount = document.getElementById('payAmount').value.trim();
+  const note = document.getElementById('payNote').value.trim();
+  const params = new URLSearchParams({ pa: UPI_ID, pn: PAYEE_NAME, cu: 'INR' });
+  if (amount && Number(amount) > 0) params.set('am', Number(amount).toFixed(2));
+  if (note) params.set('tn', note.slice(0, 50));
+  return 'upi://pay?' + params.toString();
+}
+
+function refreshPaymentUI() {
+  const upiLink = buildUpiLink();
+  document.getElementById('upiPayBtn').setAttribute('href', upiLink);
+  document.getElementById('upiQrImg').src =
+    'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(upiLink);
+}
+
+document.getElementById('payAmount').addEventListener('input', refreshPaymentUI);
+document.getElementById('payNote').addEventListener('input', refreshPaymentUI);
+refreshPaymentUI();
+
+function copyUpi() {
+  navigator.clipboard.writeText(UPI_ID).then(() => {
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-check me-1"></i>Copied';
+    setTimeout(() => { btn.innerHTML = orig; }, 1500);
+  });
+}
+</script>
+<% } %>
+<%- include('partials/footer') %>

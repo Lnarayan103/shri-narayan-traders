@@ -1,0 +1,315 @@
+<%- include('partials/header') %>
+<% pageTitle = "Customer Sign In" %>
+
+<div class="container py-4 py-md-5" style="max-width:440px;">
+  <div class="card border-0 shadow-sm" style="border-radius:16px;overflow:hidden;">
+    <div class="text-center text-white p-4" style="background:linear-gradient(135deg,#001f4d,#000f2b);">
+      <img src="/images/logo/snt-primary.png" alt="SNT" width="56" height="56" style="border-radius:12px;background:#fff;padding:5px;object-fit:contain;" onerror="this.style.display='none'">
+      <h3 class="mt-2 mb-0 fw-bold" style="font-size:1.25rem;">Customer Account</h3>
+      <p class="mb-0 small" style="opacity:.75">Shri Narayan Traders</p>
+    </div>
+    <div class="card-body p-4">
+      <div id="loginAlert" class="alert d-none small"></div>
+
+      <!-- Tabs -->
+      <ul class="nav nav-pills nav-fill mb-3 gap-1" id="authTabs">
+        <li class="nav-item"><button type="button" class="nav-link active py-2" data-tab="login" onclick="showTab('login')">Sign In</button></li>
+        <li class="nav-item"><button type="button" class="nav-link py-2" data-tab="register" onclick="showTab('register')">Register</button></li>
+        <li class="nav-item"><button type="button" class="nav-link py-2" data-tab="forgot" onclick="showTab('forgot')">Forgot</button></li>
+      </ul>
+
+      <!-- ===== LOGIN (email + password OR OTP) ===== -->
+      <div id="tab-login">
+        <% if (typeof googleClientId !== 'undefined' && googleClientId) { %>
+        <div class="d-flex justify-content-center mb-3">
+          <div id="g_id_onload" data-client_id="<%= googleClientId %>" data-callback="handleGoogleCredential" data-auto_prompt="false"></div>
+          <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin_with" data-shape="rectangular" data-logo_alignment="left"></div>
+        </div>
+        <div class="text-center text-muted small mb-3">— or sign in below —</div>
+        <% } %>
+
+        <!-- Sub-Toggle for Password vs OTP Login -->
+        <div class="d-flex gap-2 mb-3">
+          <button type="button" id="btnSignInPass" class="btn btn-sm btn-dark flex-fill" style="font-size: 12px;" onclick="toggleSignInMode('pass')">Password Login</button>
+          <button type="button" id="btnSignInOtp" class="btn btn-sm btn-outline-dark flex-fill" style="font-size: 12px;" onclick="toggleSignInMode('otp')">WhatsApp / OTP Login</button>
+        </div>
+
+        <!-- Form 1: Password Login -->
+        <form id="formSignInPass" onsubmit="return doLogin(event)">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Email or WhatsApp Number</label>
+            <input type="text" id="loginEmail" class="form-control" placeholder="you@gmail.com or 91XXXXXXXXXX">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Password</label>
+            <input type="password" id="loginPass" class="form-control" minlength="6" autocomplete="current-password" placeholder="Your password">
+          </div>
+          <button type="submit" class="btn w-100 fw-bold text-white" style="background:#001f4d;">Sign In</button>
+        </form>
+
+        <!-- Form 2: OTP Login -->
+        <div id="formSignInOtp" style="display:none;">
+          <div id="loginOtpStep1">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Email or WhatsApp Number</label>
+              <input type="text" id="loginOtpIdentifier" class="form-control" placeholder="you@gmail.com or 91XXXXXXXXXX">
+            </div>
+            <button type="button" class="btn w-100 fw-bold text-white" style="background:#001f4d;" onclick="sendLoginOtp()">Send OTP</button>
+          </div>
+          <div id="loginOtpStep2" style="display:none;">
+            <p class="small text-muted">OTP sent to <strong id="loginOtpIdentifierLabel"></strong></p>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Enter 6-Digit OTP</label>
+              <input type="text" id="loginOtpVal" class="form-control text-center fw-bold" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" style="letter-spacing:6px;font-size:1.25rem;">
+            </div>
+            <button type="button" class="btn w-100 fw-bold text-white mb-2" style="background:#001f4d;" onclick="completeOtpLogin()">Verify &amp; Sign In</button>
+            <button type="button" class="btn btn-link btn-sm w-100" onclick="sendLoginOtp()">Resend OTP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REGISTER (email/WhatsApp → OTP → password) ===== -->
+      <div id="tab-register" style="display:none;">
+        <div id="regStep1">
+          <p class="small text-muted">Enter your Email or WhatsApp number. We will send a 6-digit OTP.</p>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Email or WhatsApp Number</label>
+            <input type="text" id="regEmail" class="form-control" placeholder="you@gmail.com or 91XXXXXXXXXX">
+          </div>
+          <button type="button" class="btn w-100 fw-bold text-white" style="background:#001f4d;" onclick="sendRegOtp()">Send OTP</button>
+        </div>
+        <div id="regStep2" style="display:none;">
+          <p class="small text-muted">OTP sent to <strong id="regEmailLabel"></strong></p>
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Enter OTP</label>
+            <input type="text" id="regOtp" class="form-control text-center fw-bold" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" style="letter-spacing:6px;font-size:1.25rem;">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="Your name">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Mobile (optional)</label>
+            <input type="tel" id="regPhone" class="form-control" placeholder="10-digit mobile">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Create Password</label>
+            <input type="password" id="regPass" class="form-control" minlength="6" placeholder="Min 6 characters">
+          </div>
+          <button type="button" class="btn w-100 fw-bold text-white mb-2" style="background:#001f4d;" onclick="completeRegister()">Verify &amp; Create Account</button>
+          <button type="button" class="btn btn-link btn-sm w-100" onclick="sendRegOtp()">Resend OTP</button>
+        </div>
+      </div>
+
+      <!-- ===== FORGOT PASSWORD ===== -->
+      <div id="tab-forgot" style="display:none;">
+        <div id="fgStep1">
+          <p class="small text-muted">Enter registered Email or WhatsApp number.</p>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Email or WhatsApp Number</label>
+            <input type="text" id="fgEmail" class="form-control" placeholder="you@gmail.com or 91XXXXXXXXXX">
+          </div>
+          <button type="button" class="btn w-100 fw-bold text-white" style="background:#001f4d;" onclick="sendFgOtp()">Send OTP</button>
+        </div>
+        <div id="fgStep2" style="display:none;">
+          <p class="small text-muted">OTP sent to <strong id="fgEmailLabel"></strong></p>
+          <div class="mb-2">
+            <label class="form-label small fw-bold">OTP</label>
+            <input type="text" id="fgOtp" class="form-control text-center fw-bold" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" style="letter-spacing:6px;font-size:1.25rem;">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">New Password</label>
+            <input type="password" id="fgPass" class="form-control" minlength="6" placeholder="Min 6 characters">
+          </div>
+          <button type="button" class="btn w-100 fw-bold text-white mb-2" style="background:#001f4d;" onclick="completeReset()">Reset Password</button>
+          <button type="button" class="btn btn-link btn-sm w-100" onclick="sendFgOtp()">Resend OTP</button>
+        </div>
+      </div>
+
+      <hr class="my-3">
+      <p class="small text-muted text-center mb-0">By continuing you agree to our <a href="/terms">Terms</a> &amp; <a href="/privacy">Privacy</a>.</p>
+      <div class="text-center mt-2"><a href="/" class="small">← Back to Home</a></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #authTabs .nav-link { color:#001f4d; background:#f1f5f9; border-radius:8px; font-size:13px; font-weight:600; }
+  #authTabs .nav-link.active { background:#001f4d; color:#fff; }
+</style>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+function showAlert(type, msg) {
+  const a = document.getElementById('loginAlert');
+  a.className = 'alert alert-' + type + ' small';
+  a.textContent = msg;
+  a.classList.remove('d-none');
+}
+function showTab(name) {
+  ['login','register','forgot'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('#authTabs .nav-link').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.getElementById('loginAlert').classList.add('d-none');
+}
+function afterSuccess(data) {
+  if (data.token) try { localStorage.setItem('snt_token', data.token); } catch(e){}
+  if (data.user) try { localStorage.setItem('snt_user', JSON.stringify(data.user)); } catch(e){}
+  showAlert('success', 'Success! Redirecting...');
+  setTimeout(() => {
+    window.location.href = '/profile?token=' + encodeURIComponent(data.token || '');
+  }, 500);
+}
+async function handleGoogleCredential(response) {
+  showAlert('info', 'Signing in with Google...');
+  try {
+    const res = await fetch('/api/auth/google', {
+      method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+      body: JSON.stringify({ credential: response.credential })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) afterSuccess(data);
+    else showAlert('danger', data.error || 'Google login failed');
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+function toggleSignInMode(mode) {
+  if (mode === 'pass') {
+    document.getElementById('formSignInPass').style.display = 'block';
+    document.getElementById('formSignInOtp').style.display = 'none';
+    document.getElementById('btnSignInPass').className = 'btn btn-sm btn-dark flex-fill';
+    document.getElementById('btnSignInOtp').className = 'btn btn-sm btn-outline-dark flex-fill';
+  } else {
+    document.getElementById('formSignInPass').style.display = 'none';
+    document.getElementById('formSignInOtp').style.display = 'block';
+    document.getElementById('btnSignInPass').className = 'btn btn-sm btn-outline-dark flex-fill';
+    document.getElementById('btnSignInOtp').className = 'btn btn-sm btn-dark flex-fill';
+  }
+  document.getElementById('loginAlert').classList.add('d-none');
+}
+async function sendLoginOtp() {
+  const email = document.getElementById('loginOtpIdentifier').value.trim();
+  if (!email) return showAlert('danger', 'Enter Email or WhatsApp Mobile Number');
+  showAlert('info', 'Sending login OTP...');
+  try {
+    const res = await fetch('/api/auth/send-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, purpose: 'login' })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) return showAlert('danger', data.error || 'Failed to send OTP');
+    let msg = data.message || 'OTP sent';
+    if (data.devOtp) msg += ' | Dev OTP: ' + data.devOtp;
+    showAlert(data.devOtp ? 'warning' : 'success', msg);
+    document.getElementById('loginOtpIdentifierLabel').textContent = email;
+    document.getElementById('loginOtpStep1').style.display = 'none';
+    document.getElementById('loginOtpStep2').style.display = 'block';
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+async function completeOtpLogin() {
+  const email = document.getElementById('loginOtpIdentifier').value.trim();
+  const otp = document.getElementById('loginOtpVal').value.trim();
+  if (!otp || otp.length < 6) return showAlert('danger', 'Enter 6-digit OTP');
+  showAlert('info', 'Logging in...');
+  try {
+    const res = await fetch('/api/auth/login-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+      body: JSON.stringify({ email, otp })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) afterSuccess(data);
+    else showAlert('danger', data.error || 'Login failed');
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+async function doLogin(e) {
+  e.preventDefault();
+  showAlert('info', 'Signing in...');
+  try {
+    const res = await fetch('/api/auth/customer-login', {
+      method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+      body: JSON.stringify({ email: loginEmail.value.trim(), password: loginPass.value })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) afterSuccess(data);
+    else showAlert('danger', data.error || 'Login failed');
+  } catch(e) { showAlert('danger', 'Network error'); }
+  return false;
+}
+async function sendRegOtp() {
+  const email = regEmail.value.trim();
+  if (!email) return showAlert('danger', 'Enter email');
+  showAlert('info', 'Sending OTP...');
+  try {
+    const res = await fetch('/api/auth/send-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, purpose: 'register' })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) return showAlert('danger', data.error || 'Failed to send OTP');
+    let msg = data.message || 'OTP sent';
+    if (data.devOtp) msg += ' | Dev OTP: ' + data.devOtp;
+    showAlert(data.devOtp ? 'warning' : 'success', msg);
+    regEmailLabel.textContent = email;
+    regStep1.style.display = 'none';
+    regStep2.style.display = 'block';
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+async function completeRegister() {
+  const email = regEmail.value.trim();
+  const otp = regOtp.value.trim();
+  const password = regPass.value;
+  if (!otp || otp.length < 6) return showAlert('danger', 'Enter 6-digit OTP');
+  if (!password || password.length < 6) return showAlert('danger', 'Password min 6 characters');
+  showAlert('info', 'Creating account...');
+  try {
+    const res = await fetch('/api/auth/register-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+      body: JSON.stringify({ email, otp, password, name: regName.value.trim(), phone: regPhone.value.trim() })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) afterSuccess(data);
+    else showAlert('danger', data.error || 'Registration failed');
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+async function sendFgOtp() {
+  const email = fgEmail.value.trim();
+  if (!email) return showAlert('danger', 'Enter email');
+  showAlert('info', 'Sending OTP...');
+  try {
+    const res = await fetch('/api/auth/send-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, purpose: 'reset' })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) return showAlert('danger', data.error || 'Failed to send OTP');
+    let msg = data.message || 'OTP sent';
+    if (data.devOtp) msg += ' | Dev OTP: ' + data.devOtp;
+    showAlert(data.devOtp ? 'warning' : 'success', msg);
+    fgEmailLabel.textContent = email;
+    fgStep1.style.display = 'none';
+    fgStep2.style.display = 'block';
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+async function completeReset() {
+  const email = fgEmail.value.trim();
+  const otp = fgOtp.value.trim();
+  const newPassword = fgPass.value;
+  if (!otp || otp.length < 6) return showAlert('danger', 'Enter 6-digit OTP');
+  if (!newPassword || newPassword.length < 6) return showAlert('danger', 'Password min 6 characters');
+  showAlert('info', 'Updating password...');
+  try {
+    const res = await fetch('/api/auth/reset-password', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, otp, newPassword })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showAlert('success', data.message || 'Password updated. Please sign in.');
+      setTimeout(() => showTab('login'), 1200);
+    } else showAlert('danger', data.error || 'Reset failed');
+  } catch(e) { showAlert('danger', 'Network error'); }
+}
+</script>
+<%- include('partials/footer') %>

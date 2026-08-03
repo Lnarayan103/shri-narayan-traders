@@ -1,0 +1,160 @@
+<!-- ══ FOOTER ══ -->
+<footer style="background: linear-gradient(180deg, #000f2b 0%, #001835 100%); color: rgba(255,255,255,0.7); border-top: 3px solid var(--gold);" class="pt-5 pb-3 mt-5">
+  <div class="container">
+    <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.08)">
+
+      <!-- Brand -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="/images/logo/snt-dark.png" alt="SNT" style="height: 44px; object-fit: contain; border-radius: 8px; background: #fff; padding: 2px;">
+          <div>
+            <div class="logo-name" style="font-size:1rem;"><%= settings.businessName %></div>
+            <div class="logo-sub"><%= settings.heroBannerText %></div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; line-height:1.8;">Premium supplier of construction hardware, custom home &amp; office furniture, and professional aluminium fabrication works. Serving all India.</p>
+        <div class="d-flex gap-2 mt-3">
+          <% if(settings.facebook) { %><a href="<%= settings.facebook %>" target="_blank" class="footer-social-btn"><i class="fa-brands fa-facebook-f"></i></a><% } %>
+          <% if(settings.instagram) { %><a href="<%= settings.instagram %>" target="_blank" class="footer-social-btn"><i class="fa-brands fa-instagram"></i></a><% } %>
+          <a href="https://wa.me/<%= settings.whatsapp %>" target="_blank" class="footer-social-btn" style="background:rgba(37,211,102,0.15);border-color:rgba(37,211,102,0.3);color:#25d366;"><i class="fa-brands fa-whatsapp"></i></a>
+          <% if(settings.twitter) { %><a href="<%= settings.twitter %>" target="_blank" class="footer-social-btn"><i class="fa-brands fa-x-twitter"></i></a><% } %>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 class="text-warning fw-bold mb-3" style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;">Categories</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="/products?category=hardware">Hardware Items</a></li>
+          <li><a href="/products?category=furniture">Home Furniture</a></li>
+          <li><a href="/products?category=office">Office Furniture</a></li>
+          <li><a href="/products?category=doors">Aluminium Doors</a></li>
+          <li><a href="/products?category=windows">Aluminium Windows</a></li>
+          <li><a href="/products?category=custom">Custom Orders</a></li>
+        </ul>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 class="text-warning fw-bold mb-3" style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;">Quick Links</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/gallery">Gallery</a></li>
+          <li><a href="/offers">Offers</a></li>
+          <li><a href="/track">Track Order</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms & Conditions</a></li>
+          <% if (settings.googleReviewLink) { %>
+            <li><a href="<%= settings.googleReviewLink %>" target="_blank" style="color: var(--gold-light); font-weight: bold;"><i class="fa-solid fa-star text-warning me-1" style="font-size:12px;"></i> Write a Review</a></li>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-lg-4 col-md-6">
+        <h6 class="text-warning fw-bold mb-3" style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;">Store Details</h6>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-location-dot text-warning mt-1"></i>
+          <span><%= settings.address %></span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-phone text-warning"></i>
+          <a href="tel:<%= settings.phone.split(',')[0].trim() %>"><%= settings.phone %></a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-envelope text-warning"></i>
+          <a href="mailto:<%= settings.email %>"><%= settings.email %></a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-regular fa-clock text-warning"></i>
+          <span>Monday – Saturday: 9:00 AM – 8:00 PM</span>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <a href="https://wa.me/<%= settings.whatsapp %>?text=Hello%20I%20have%20an%20inquiry" target="_blank" class="btn btn-sm fw-bold" style="background:rgba(37,211,102,0.15);color:#25d366;border:1px solid rgba(37,211,102,0.3);border-radius:8px;font-size:12px;padding:6px 14px"><i class="fa-brands fa-whatsapp me-1"></i> WhatsApp</a>
+          <a href="tel:<%= settings.phone.split(',')[0].trim() %>" class="btn btn-sm fw-bold" style="background:rgba(201,146,42,0.15);color:var(--gold-light);border:1px solid rgba(201,146,42,0.3);border-radius:8px;font-size:12px;padding:6px 14px"><i class="fa-solid fa-phone me-1"></i> Call Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 gap-2">
+      <p class="mb-0" style="font-size:12px;">&copy; <%= new Date().getFullYear() %> <strong><%= settings.businessName %></strong>. All Rights Reserved. <span style="margin-left: 10px; color: var(--gold-light); font-weight: bold;">Created by SNT Self Laxmi Narayan</span></p>
+      <div class="d-flex gap-3">
+        <a href="/privacy" style="font-size:11px;color:rgba(255,255,255,0.45);">Privacy Policy</a>
+        <a href="/terms" style="font-size:11px;color:rgba(255,255,255,0.45);">Terms &amp; Conditions</a>
+        <a href="/contact" style="font-size:11px;color:rgba(255,255,255,0.45);">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating Buttons -->
+<% if (!locals.user || !['admin', 'super-admin', 'manager', 'sales', 'dealer'].includes(user.role)) { %>
+<div class="floating-btns">
+  <a href="tel:<%= settings.phone.split(',')[0].trim() %>" class="float-btn call" title="Call Us"><i class="fa-solid fa-phone"></i></a>
+  <a href="https://wa.me/<%= settings.whatsapp %>?text=Hello%20<%= encodeURIComponent(settings.businessName) %>,%20I%20have%20an%20inquiry." target="_blank" class="float-btn whatsapp" title="WhatsApp Chat"><i class="fa-brands fa-whatsapp"></i></a>
+</div>
+<% } %>
+
+<style>
+  .footer-links li { margin-bottom: 7px; }
+  .footer-links a {
+    color: rgba(255,255,255,0.55); font-size: 13.5px;
+    text-decoration: none; transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .footer-links a::before { content: '›'; color: var(--gold); font-size: 16px; line-height: 1; }
+  .footer-links a:hover { color: var(--gold-light); padding-left: 4px; }
+  .footer-contact-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 12px; font-size: 13.5px;
+  }
+  .footer-contact-item i { margin-top: 3px; flex-shrink: 0; }
+  .footer-contact-item a { color: rgba(255,255,255,0.7); text-decoration: none; }
+  .footer-contact-item a:hover { color: var(--gold-light); }
+  .footer-social-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(201,146,42,0.12);
+    border: 1px solid rgba(201,146,42,0.25);
+    color: var(--gold-light); font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .footer-social-btn:hover { background: var(--gold); color: var(--navy-deep); transform: translateY(-3px); }
+
+  /* Floating buttons */
+  .floating-btns {
+    position: fixed; bottom: 22px; right: 22px;
+    display: flex; flex-direction: column; gap: 12px;
+    z-index: 1000;
+  }
+  .float-btn {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 22px; text-decoration: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: all 0.3s ease;
+  }
+  .float-btn:hover { transform: scale(1.12) translateY(-2px); color: #fff; }
+  .float-btn.whatsapp { background: #25d366; }
+  .float-btn.call     { background: #0d6efd; }
+
+  /* Smooth link underlines in footer bottom */
+  .footer-bottom a:hover { color: var(--gold-light) !important; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: 'en,hi,bn,mr,ta,te,gu,pa,ur', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+    if (document.getElementById('google_translate_element_mobile')) {
+      new google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: 'en,hi,bn,mr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element_mobile');
+    }
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

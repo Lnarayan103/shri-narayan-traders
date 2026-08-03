@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+      <div class="bg-white p-4 p-md-5 rounded shadow-sm border border-top border-warning border-3">
+        <div class="text-center mb-4">
+          <i class="fa-solid fa-truck-ramp-box text-warning display-4 mb-2"></i>
+          <h2 class="fw-bold text-dark font-playfair">Register Dealer Account</h2>
+          <p class="text-secondary small">Submit business documents to access wholesale price tiers and terms</p>
+        </div>
+
+        <div id="regAlert" class="alert d-none"></div>
+
+        <form id="regForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Select Username *</label>
+              <input type="text" id="username" class="form-control" placeholder="e.g. shri_hardware" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Email Address *</label>
+              <input type="email" id="email" class="form-control" placeholder="e.g. contact@business.com" required>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Select Password *</label>
+              <input type="password" id="password" class="form-control" placeholder="Minimum 6 characters" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Business / Store Name *</label>
+              <input type="text" id="businessName" class="form-control" placeholder="e.g. Shri Hardware Stores" required>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Mobile Phone *</label>
+              <input type="tel" id="phone" class="form-control" placeholder="10-digit number" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">GSTIN Number (Optional)</label>
+              <input type="text" id="gstin" class="form-control text-uppercase" placeholder="15-digit GSTIN number">
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label fw-bold">Shipping / Billing Address *</label>
+            <textarea id="address" class="form-control" rows="3" placeholder="Full shop address with city, state, zip code..." required></textarea>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold mb-3">Submit Registration Request</button>
+        </form>
+
+        <div class="text-center border-top pt-3 small">
+          <span class="text-secondary">Already a dealer?</span>
+          <a href="/dealer/login" class="fw-bold text-decoration-none text-primary ms-1">Sign In Here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('regForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById('regAlert');
+    alertBox.className = 'alert d-none';
+    
+    const data = {
+      username: document.getElementById('username').value,
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+      businessName: document.getElementById('businessName').value,
+      phone: document.getElementById('phone').value,
+      gstin: document.getElementById('gstin').value,
+      address: document.getElementById('address').value,
+    };
+    
+    try {
+      const response = await fetch('/api/auth/register-dealer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alertBox.className = 'alert alert-success';
+        alertBox.innerText = 'Registration request submitted! Awaiting admin approval. Redirecting in 3 seconds...';
+        document.getElementById('regForm').reset();
+        setTimeout(() => {
+          window.location.href = '/dealer/login';
+        }, 3000);
+      } else {
+        alertBox.className = 'alert alert-danger';
+        alertBox.innerText = result.error || 'Registration failed. Please check input parameters.';
+      }
+    } catch (err) {
+      alertBox.className = 'alert alert-danger';
+      alertBox.innerText = 'Network error submitting request. Please try again.';
+    }
+  });
+</script>
+
+<%- include('../partials/header') %>

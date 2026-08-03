@@ -1,0 +1,96 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <h4 class="mb-3">New Quotation</h4>
+  <div class="admin-card p-4">
+    <div id="qAlert" class="alert d-none"></div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Customer Name *</label>
+        <input id="qName" class="form-control" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-bold">Phone</label>
+        <input id="qPhone" class="form-control" maxlength="10">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-bold">Email</label>
+        <input id="qEmail" type="email" class="form-control">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-bold">Address</label>
+        <textarea id="qAddress" class="form-control" rows="2"></textarea>
+      </div>
+    </div>
+    <hr>
+    <h6 class="fw-bold">Items</h6>
+    <div id="qItems"></div>
+    <button type="button" class="btn btn-sm btn-outline-primary mb-3" onclick="addRow()">+ Add Item</button>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Discount (₹)</label>
+        <input id="qDiscount" type="number" class="form-control" value="0" min="0">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Valid Until</label>
+        <input id="qValid" type="date" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Notes</label>
+        <input id="qNotes" class="form-control" placeholder="Optional">
+      </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+      <button class="btn btn-primary" onclick="saveQuote()">Save Quotation</button>
+      <a href="/admin/quotations" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </div>
+</div>
+<script>
+function addRow(name='', qty=1, price=0, gst=18) {
+  const div = document.createElement('div');
+  div.className = 'row g-2 mb-2 q-row';
+  div.innerHTML = `
+    <div class="col-md-5"><input class="form-control form-control-sm q-name" placeholder="Item name" value="${name}"></div>
+    <div class="col-md-2"><input type="number" class="form-control form-control-sm q-qty" value="${qty}" min="1"></div>
+    <div class="col-md-2"><input type="number" class="form-control form-control-sm q-price" value="${price}" min="0"></div>
+    <div class="col-md-2"><input type="number" class="form-control form-control-sm q-gst" value="${gst}" min="0"></div>
+    <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.q-row').remove()">×</button></div>`;
+  document.getElementById('qItems').appendChild(div);
+}
+addRow();
+async function saveQuote() {
+  const items = [...document.querySelectorAll('.q-row')].map(r => ({
+    name: r.querySelector('.q-name').value,
+    qty: +r.querySelector('.q-qty').value,
+    price: +r.querySelector('.q-price').value,
+    gstRate: +r.querySelector('.q-gst').value
+  })).filter(i => i.name);
+  const body = {
+    customerName: document.getElementById('qName').value.trim(),
+    customerPhone: document.getElementById('qPhone').value.trim(),
+    customerEmail: document.getElementById('qEmail').value.trim(),
+    customerAddress: document.getElementById('qAddress').value.trim(),
+    discount: +document.getElementById('qDiscount').value || 0,
+    validUntil: document.getElementById('qValid').value || undefined,
+    notes: document.getElementById('qNotes').value,
+    items
+  };
+  const alert = document.getElementById('qAlert');
+  try {
+    const res = await fetch('/api/quotations', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) {
+      alert.className = 'alert alert-success';
+      alert.textContent = 'Saved! Redirecting...';
+      setTimeout(() => location.href = '/admin/quotations', 700);
+    } else {
+      alert.className = 'alert alert-danger';
+      alert.textContent = data.error || 'Failed';
+    }
+  } catch(e) {
+    alert.className = 'alert alert-danger';
+    alert.textContent = 'Network error';
+  }
+}
+</script>
+<%- include('../partials/admin-footer') %>

@@ -1,0 +1,52 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between mb-4"><h4 class="mb-0">Job Work / Fabrication</h4>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#jwModal">+ New Job</button></div>
+  <div class="admin-card table-responsive"><table class="table table-hover mb-0 align-middle">
+    <thead class="table-light"><tr><th>Job ID</th><th>Customer</th><th>Title</th><th>Category</th><th>Status</th><th>Due</th><th></th></tr></thead>
+    <tbody>
+      <% (jobworks||[]).forEach(j => { %>
+      <tr>
+        <td class="fw-bold"><%= j.jobId %></td>
+        <td><div><%= j.customerName %></div><div class="small text-muted"><%= j.customerPhone||'' %></div></td>
+        <td><%= j.title %></td>
+        <td class="text-capitalize"><%= j.category %></td>
+        <td>
+          <select class="form-select form-select-sm" style="width:auto" onchange="setStatus('<%= j._id %>', this.value)">
+            <% ['pending','in_progress','quality_check','completed','delivered','cancelled'].forEach(s => { %>
+              <option value="<%= s %>" <%= j.status===s?'selected':'' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </td>
+        <td class="small"><%= j.dueDate||'—' %></td>
+        <td><button class="btn btn-sm btn-outline-danger" onclick="del('/api/jobworks/<%= j._id %>')">Del</button></td>
+      </tr>
+      <% }) %>
+      <% if(!(jobworks||[]).length){ %><tr><td colspan="7" class="text-center text-muted py-4">No job works</td></tr><% } %>
+    </tbody></table></div>
+</div>
+<div class="modal fade" id="jwModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">New Job Work</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input id="jCust" class="form-control mb-2" placeholder="Customer Name *">
+    <input id="jPhone" class="form-control mb-2" placeholder="Phone">
+    <input id="jTitle" class="form-control mb-2" placeholder="Job Title *">
+    <select id="jCat" class="form-select mb-2"><option value="aluminium">Aluminium</option><option value="furniture">Furniture</option><option value="custom">Custom</option></select>
+    <input id="jDue" type="date" class="form-control mb-2">
+    <input id="jCost" type="number" class="form-control mb-2" placeholder="Estimated Cost">
+    <textarea id="jDesc" class="form-control" placeholder="Description / specs"></textarea>
+  </div>
+  <div class="modal-footer"><button class="btn btn-primary" onclick="saveJw()">Create</button></div>
+</div></div></div>
+<script>
+async function saveJw(){
+  const body={customerName:jCust.value,customerPhone:jPhone.value,title:jTitle.value,category:jCat.value,dueDate:jDue.value,estimatedCost:+jCost.value,description:jDesc.value};
+  const r=await fetch('/api/jobworks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok) location.reload(); else alert('Failed');
+}
+async function setStatus(id,status){
+  await fetch('/api/jobworks/'+id+'/status',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+}
+async function del(url){ if(confirm('Delete?')){ await fetch(url,{method:'DELETE'}); location.reload(); }}
+</script>
+<%- include('../partials/admin-footer') %>

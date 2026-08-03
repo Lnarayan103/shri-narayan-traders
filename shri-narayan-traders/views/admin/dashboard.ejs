@@ -1,0 +1,108 @@
+<%- include('../partials/admin-header') %>
+
+<div class="admin-content">
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4">
+    <% const stats = [
+      {icon:'fa-file-lines',label:'Total Orders',val:totalOrders||0,sub:'All time',color:'#3b82f6'},
+      {icon:'fa-indian-rupee-sign',label:'Total Revenue',val:'₹'+(totalRevenue||0).toLocaleString('en-IN'),sub:'All time',color:'#16a34a'},
+      {icon:'fa-boxes-stacked',label:'Products',val:totalProducts||0,sub:'In catalog',color:'#f59e0b'},
+      {icon:'fa-envelope-open-text',label:'Enquiries',val:pendingEnquiries||0,sub:'Pending',color:'#8b5cf6'},
+    ]; %>
+    <% stats.forEach(s=>{ %>
+    <div class="col-xl-3 col-md-6">
+      <div class="stat-card-admin" style="--sc:#<%=s.color.slice(1)%>">
+        <div class="sc-icon" style="background:<%=s.color%>22;color:<%=s.color%>"><i class="fa-solid <%=s.icon%>"></i></div>
+        <div class="sc-val"><%= s.val %></div>
+        <div class="sc-label"><%= s.label %></div>
+        <div class="sc-sub"><%= s.sub %></div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <div class="row g-4">
+    <!-- Recent Orders -->
+    <div class="col-lg-8">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h5><i class="fa-solid fa-receipt me-2 text-warning"></i>Recent Orders</h5>
+          <a href="/admin/orders" class="btn-admin-sm">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody>
+              <% if(recentOrders && recentOrders.length>0) { %>
+                <% recentOrders.forEach(o=>{ %>
+                <tr>
+                  <td><code style="font-size:12px"><%= o.orderId %></code></td>
+                  <td><span class="fw-semibold"><%= o.customerName %></span><br><span style="font-size:11px;color:var(--text-muted)"><%= o.customerPhone %></span></td>
+                  <td class="fw-bold">₹<%= (o.totalAmount||0).toLocaleString('en-IN') %></td>
+                  <td><span class="status-badge status-<%= o.status %>"><%= o.status %></span></td>
+                  <td style="font-size:12px"><%= new Date(o.createdAt).toLocaleDateString('en-IN') %></td>
+                  <td><a href="/admin/orders/<%= o._id %>" class="btn-admin-xs">View</a></td>
+                </tr>
+                <% }) %>
+              <% } else { %>
+              <tr><td colspan="6" class="text-center text-muted py-4">No orders yet</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+      <div class="admin-card mb-3">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-bolt me-2 text-warning"></i>Quick Actions</h5></div>
+        <div class="quick-actions-grid">
+          <a href="/admin/products/add" class="qa-btn"><i class="fa-solid fa-plus"></i><span>Add Product</span></a>
+          <a href="/admin/offers/add" class="qa-btn"><i class="fa-solid fa-tag"></i><span>New Offer</span></a>
+          <a href="/admin/orders" class="qa-btn"><i class="fa-solid fa-list-ul"></i><span>Orders</span></a>
+          <a href="/admin/enquiries" class="qa-btn"><i class="fa-solid fa-inbox"></i><span>Enquiries</span></a>
+          <a href="/admin/billing" class="qa-btn"><i class="fa-solid fa-receipt"></i><span>Billing</span></a>
+          <a href="/admin/settings" class="qa-btn"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+        </div>
+      </div>
+
+      <!-- Recent Enquiries -->
+      <div class="admin-card">
+        <div class="admin-card-header"><h5><i class="fa-solid fa-inbox me-2 text-warning"></i>New Enquiries</h5><a href="/admin/enquiries" class="btn-admin-sm">All</a></div>
+        <% if(recentEnquiries && recentEnquiries.length>0) { %>
+          <% recentEnquiries.slice(0,4).forEach(enq=>{ %>
+          <div class="enq-mini-item">
+            <div class="enq-mini-name"><%= enq.name %></div>
+            <div class="enq-mini-msg"><%= (enq.message||'').slice(0,60) %>...</div>
+            <div class="enq-mini-time"><%= new Date(enq.createdAt).toLocaleDateString('en-IN') %></div>
+          </div>
+          <% }) %>
+        <% } else { %>
+        <p class="text-muted text-center py-3" style="font-size:13px">No new enquiries</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.stat-card-admin { background:#fff;border-radius:14px;padding:1.5rem;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);position:relative;overflow:hidden; }
+.stat-card-admin::before { content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--gold-grad); }
+.sc-icon { width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.85rem; }
+.sc-val { font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:800;color:var(--navy);line-height:1; }
+.sc-label { font-size:13px;font-weight:700;color:var(--navy);margin-top:.25rem; }
+.sc-sub { font-size:11.5px;color:var(--text-muted);margin-top:2px; }
+.quick-actions-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;padding:1rem; }
+.qa-btn { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;background:var(--cream);border-radius:10px;padding:.85rem .5rem;text-decoration:none;color:var(--navy);font-size:11.5px;font-weight:600;transition:all .2s ease;border:1px solid rgba(0,0,0,.05); }
+.qa-btn i { font-size:1.1rem;color:var(--gold); }
+.qa-btn:hover { background:var(--navy-grad);color:#fff;border-color:transparent; }
+.qa-btn:hover i { color:var(--gold-light); }
+.enq-mini-item { padding:.75rem 1rem;border-bottom:1px solid rgba(0,0,0,.04); }
+.enq-mini-item:last-child { border-bottom:none; }
+.enq-mini-name { font-size:13px;font-weight:700;color:var(--navy); }
+.enq-mini-msg  { font-size:12px;color:var(--text-muted);line-height:1.5;margin:.1rem 0; }
+.enq-mini-time { font-size:11px;color:rgba(0,0,0,.3); }
+</style>
+
+<%- include('../partials/admin-footer') %>

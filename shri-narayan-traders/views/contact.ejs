@@ -1,0 +1,180 @@
+<%- include('partials/header') %>
+<% pageTitle = "Contact Us" %>
+
+<section style="background:var(--navy-grad);border-bottom:3px solid var(--gold);padding:3.5rem 0;">
+  <div class="container text-center text-white">
+    <div class="fade-up">
+      <span class="section-tag text-warning">Reach Out</span>
+      <h1 class="font-playfair fw-bold mt-1 mb-2">Contact Us</h1>
+      <p style="color:rgba(255,255,255,.65);">Questions, quotes, or just want to say hello — we're here.</p>
+      <nav aria-label="breadcrumb"><ol class="breadcrumb justify-content-center mb-0" style="font-size:13px;"><li class="breadcrumb-item"><a href="/" class="text-warning text-decoration-none">Home</a></li><li class="breadcrumb-item active text-white-50">Contact</li></ol></nav>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <!-- Contact Info Cards -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-3 col-6 fade-up">
+      <div class="cinfo-card"><div class="cinfo-icon"><i class="fa-solid fa-phone"></i></div><div class="cinfo-label">Call Us</div><a href="tel:<%= settings.phone.split(',')[0].trim() %>" class="cinfo-val"><%= settings.phone %></a></div>
+    </div>
+    <div class="col-md-3 col-6 fade-up fade-up-d1">
+      <div class="cinfo-card"><div class="cinfo-icon" style="background:rgba(37,211,102,.12);color:#25d366;"><i class="fa-brands fa-whatsapp"></i></div><div class="cinfo-label">WhatsApp</div><a href="https://wa.me/<%= settings.whatsapp %>" target="_blank" class="cinfo-val">+<%= settings.whatsapp %></a></div>
+    </div>
+    <div class="col-md-3 col-6 fade-up fade-up-d2">
+      <div class="cinfo-card"><div class="cinfo-icon"><i class="fa-solid fa-envelope"></i></div><div class="cinfo-label">Email Us</div><a href="mailto:<%= settings.email %>" class="cinfo-val"><%= settings.email %></a></div>
+    </div>
+    <div class="col-md-3 col-6 fade-up fade-up-d3">
+      <div class="cinfo-card"><div class="cinfo-icon"><i class="fa-solid fa-location-dot"></i></div><div class="cinfo-label">Our Store</div><span class="cinfo-val"><%= settings.address %></span></div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Enquiry Form -->
+    <div class="col-lg-7 fade-up">
+      <div class="contact-form-card">
+        <h4 class="font-playfair mb-1">Send an Enquiry</h4>
+        <p class="text-muted mb-4" style="font-size:13.5px;">Fill in the details below and we'll get back to you within a few hours.</p>
+        <div id="formAlert"></div>
+        <form id="contactForm" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label-snt">Full Name *</label>
+              <input type="text" name="name" class="form-input-snt" placeholder="Your full name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label-snt">Phone Number *</label>
+              <input type="tel" name="phone" class="form-input-snt" placeholder="+91 XXXXX XXXXX" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label-snt">Email Address</label>
+              <input type="email" name="email" class="form-input-snt" placeholder="you@email.com" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label-snt">Subject</label>
+              <select name="subject" class="form-input-snt">
+                <option value="">Select subject...</option>
+                <option value="Request Quote" <%= locals.subject === 'Request Quote' ? 'selected' : '' %>>Request a Quote</option>
+                <option value="Product Enquiry">Product Enquiry</option>
+                <option value="Dealer Partnership">Dealer Partnership</option>
+                <option value="Order Status">Order Status</option>
+                <option value="Complaint">Complaint / Feedback</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label-snt">Message *</label>
+              <textarea name="message" class="form-input-snt" rows="5" placeholder="Describe your requirement in detail — product name, quantity, specifications, etc." required></textarea>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn-hero-primary w-100 justify-content-center" id="submitBtn" style="display:flex;">
+                <span id="btnText"><i class="fa-solid fa-paper-plane me-2"></i> Send Enquiry</span>
+                <span id="btnLoading" class="d-none"><i class="fa-solid fa-circle-notch fa-spin me-2"></i> Sending...</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Map + Hours -->
+    <div class="col-lg-5 fade-up fade-up-d1">
+      <div class="map-wrapper mb-3" style="height:300px;">
+        <% if(settings.mapEmbedUrl) { %>
+        <iframe src="<%= settings.mapEmbedUrl %>" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" title="Store Location"></iframe>
+        <% } else { %>
+        <div style="height:100%;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);border-radius:14px;">
+          <i class="fa-solid fa-map-location-dot fa-3x mb-2" style="color:var(--gold)"></i>
+          <p style="font-size:13px;">Add Maps URL in Admin → Settings</p>
+        </div>
+        <% } %>
+      </div>
+      <div class="hours-card">
+        <h6 class="fw-bold mb-3"><i class="fa-regular fa-clock me-2 text-warning"></i>Business Hours</h6>
+        <% const days=[{d:'Monday',h:'9:00 AM – 8:00 PM',open:true},{d:'Tuesday',h:'9:00 AM – 8:00 PM',open:true},{d:'Wednesday',h:'9:00 AM – 8:00 PM',open:true},{d:'Thursday',h:'9:00 AM – 8:00 PM',open:true},{d:'Friday',h:'9:00 AM – 8:00 PM',open:true},{d:'Saturday',h:'9:00 AM – 6:00 PM',open:true},{d:'Sunday',h:'Closed',open:false}]; %>
+        <% const today=new Date().getDay(); %>
+        <% days.forEach((d,i)=>{ %>
+        <div class="hours-row <%=i===today?'today':''%>">
+          <span class="day-name"><%= d.d %><% if(i===today){ %> <span class="today-badge">Today</span><% } %></span>
+          <span class="<%= d.open?'hours-open':'hours-closed' %>"><%= d.h %></span>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.cinfo-card { background:#fff;border-radius:14px;padding:1.5rem 1.25rem;text-align:center;border:1px solid rgba(201,146,42,.1);box-shadow:var(--shadow-sm);height:100%;transition:all .25s ease; }
+.cinfo-card:hover { box-shadow:var(--shadow-md);border-color:rgba(201,146,42,.3); }
+.cinfo-icon { width:46px;height:46px;background:rgba(201,146,42,.12);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1.1rem;margin:0 auto .75rem; }
+.cinfo-label { font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--text-muted);margin-bottom:.3rem; }
+.cinfo-val { display:block;font-size:13.5px;font-weight:600;color:var(--navy);text-decoration:none;line-height:1.4; }
+.cinfo-val:hover { color:var(--gold-dark); }
+.contact-form-card { background:#fff;border-radius:16px;padding:2rem;box-shadow:var(--shadow-md);border:1px solid rgba(201,146,42,.1); }
+.form-label-snt { font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block; }
+.form-input-snt { width:100%;background:var(--cream);border:1.5px solid rgba(0,31,77,.1);border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Outfit',sans-serif;color:var(--text-main);transition:all .2s ease;outline:none; }
+.form-input-snt:focus { border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,146,42,.12); }
+textarea.form-input-snt { resize:vertical;min-height:120px; }
+.map-wrapper { border-radius:14px;overflow:hidden;box-shadow:var(--shadow-md);border:2px solid rgba(201,146,42,.15); }
+.hours-card { background:#fff;border-radius:14px;padding:1.4rem 1.5rem;box-shadow:var(--shadow-sm);border:1px solid rgba(201,146,42,.1); }
+.hours-row { display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:13.5px; }
+.hours-row:last-child { border-bottom:none; }
+.hours-row.today { background:rgba(201,146,42,.06);margin:0 -.5rem;padding:7px .5rem;border-radius:8px; }
+.day-name { color:var(--text-main);font-weight:500; }
+.today-badge { background:var(--gold-grad);color:var(--navy-deep);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px; }
+.hours-open  { color:#16a34a;font-weight:600; }
+.hours-closed{ color:#dc2626;font-weight:600; }
+</style>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const alert = document.getElementById('formAlert');
+  document.getElementById('btnText').classList.add('d-none');
+  document.getElementById('btnLoading').classList.remove('d-none');
+  btn.disabled = true;
+  const fd = new FormData(this);
+  const body = Object.fromEntries(fd.entries());
+  try {
+    const res = await fetch('/api/enquiries', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) {
+      alert.innerHTML = '<div class="alert" style="background:rgba(22,163,74,.1);border:1px solid #16a34a;color:#15803d;border-radius:10px;padding:12px 16px;font-size:13.5px;"><i class="fa-solid fa-circle-check me-2"></i> Enquiry sent successfully! We will contact you shortly.</div>';
+      this.reset();
+    } else { throw new Error(data.message || 'Failed'); }
+  } catch(err) {
+    alert.innerHTML = '<div class="alert" style="background:rgba(220,38,38,.08);border:1px solid #dc2626;color:#dc2626;border-radius:10px;padding:12px 16px;font-size:13.5px;"><i class="fa-solid fa-circle-xmark me-2"></i> Something went wrong. Please call us directly.</div>';
+  } finally {
+    document.getElementById('btnText').classList.remove('d-none');
+    document.getElementById('btnLoading').classList.add('d-none');
+    btn.disabled = false;
+  }
+});
+
+// Pre-fill subject category from URL query parameters if present
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const subjectParam = urlParams.get('subject');
+  if (subjectParam) {
+    const subjectSelect = document.querySelector('select[name="subject"]');
+    if (subjectSelect) {
+      let optionExists = false;
+      for (let i = 0; i < subjectSelect.options.length; i++) {
+        if (subjectSelect.options[i].value.toLowerCase() === subjectParam.toLowerCase()) {
+          subjectSelect.selectedIndex = i;
+          optionExists = true;
+          break;
+        }
+      }
+      if (!optionExists) {
+        const newOpt = new Option(subjectParam, subjectParam, true, true);
+        subjectSelect.add(newOpt);
+      }
+    }
+  }
+});
+</script>
+
+<%- include('partials/footer') %>

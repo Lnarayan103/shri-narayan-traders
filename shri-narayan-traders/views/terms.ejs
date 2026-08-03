@@ -1,0 +1,156 @@
+<%- include('partials/header') %>
+<% pageTitle = "Terms & Conditions" %>
+
+<section style="background: var(--navy-grad); border-bottom: 3px solid var(--gold); padding: 3.5rem 0;">
+  <div class="container text-center text-white">
+    <div class="fade-up">
+      <span class="section-tag">Legal</span>
+      <h1 class="font-playfair fw-bold mt-1 mb-2">Terms &amp; Conditions</h1>
+      <p class="text-gold mb-3">Please read these terms carefully before using our services</p>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb justify-content-center mb-0" style="font-size:13px;">
+          <li class="breadcrumb-item"><a href="/" class="text-warning text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item active text-white-50">Terms &amp; Conditions</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="d-flex align-items-center gap-2 mb-4 fade-up">
+        <span class="badge" style="background:rgba(201,146,42,0.15);color:var(--gold);border:1px solid var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;">
+          <i class="fa-regular fa-calendar me-1"></i> Effective: January 2025
+        </span>
+      </div>
+
+      <div class="tc-intro fade-up">
+        <p>By accessing or using the website and services of <strong><%= settings.businessName %></strong>, you agree to be bound by the following Terms &amp; Conditions. If you do not agree, please do not use our services.</p>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">01</div>
+        <h4>General Use</h4>
+        <p>This website is intended for customers and dealers seeking to purchase or enquire about hardware, furniture, and aluminium fabrication products. You agree to use this website only for lawful purposes and in a manner that does not infringe the rights of others.</p>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">02</div>
+        <h4>Products &amp; Pricing</h4>
+        <ul>
+          <li>All product descriptions, images, and prices are provided in good faith and may change without prior notice.</li>
+          <li>Prices displayed are in Indian Rupees (₹) and are exclusive of GST unless stated otherwise.</li>
+          <li>We reserve the right to modify prices, discontinue products, or limit quantities at any time.</li>
+          <li>Custom orders (aluminium fabrication, custom furniture) require a confirmed written quote before production begins.</li>
+        </ul>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">03</div>
+        <h4>Orders &amp; Payment</h4>
+        <ul>
+          <li>Orders are confirmed only upon receipt of advance payment or written purchase order (for registered dealers).</li>
+          <li>Auto-generated Order IDs (e.g., SNT-YYYYMMDD-XXXX) are for tracking purposes only and do not constitute a contract until confirmed by us.</li>
+          <li>We accept payment via bank transfer, UPI, cash, and other agreed methods.</li>
+          <li>Full payment is required before delivery for retail customers. Dealer credit terms are governed by separate dealer agreements.</li>
+        </ul>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">04</div>
+        <h4>Delivery &amp; Installation</h4>
+        <ul>
+          <li>Estimated delivery timelines are communicated at the time of order confirmation.</li>
+          <li>We are not liable for delays caused by transportation strikes, natural events, or other circumstances beyond our control.</li>
+          <li>Installation services (where offered) are subject to site accessibility and additional charges may apply.</li>
+          <li>Risk of loss or damage transfers to the buyer upon delivery.</li>
+        </ul>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">05</div>
+        <h4>Returns &amp; Cancellations</h4>
+        <ul>
+          <li>Standard items may be returned within <strong>7 days</strong> of delivery if unused and in original packaging, subject to evaluation.</li>
+          <li><strong>Custom-Made & Assembled Items:</strong> All custom-designed furniture, assembled products, and fabricated aluminium structures are manufactured strictly to order. Once work or production has started (order status changes to 'Processing'), these orders <strong>cannot be cancelled</strong> under any circumstances.</li>
+          <li><strong>No Payment Returns:</strong> No refunds, payment returns, or exchange policies are applicable for customized orders once production or assembly work has commenced.</li>
+          <li>For standard stock cancellations before shipment, a cancellation fee of up to 20% may be charged to cover processing costs.</li>
+          <li>Damaged goods must be reported within <strong>24 hours</strong> of delivery with clear photographic evidence for replacement eligibility.</li>
+        </ul>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">06</div>
+        <h4>Dealer Portal</h4>
+        <ul>
+          <li>Dealer accounts are issued only to verified businesses with valid GSTIN.</li>
+          <li>Dealer login credentials are confidential and must not be shared.</li>
+          <li>Wholesale pricing is exclusively for registered dealers and must not be disclosed to end customers.</li>
+          <li>We reserve the right to suspend or terminate dealer accounts for policy violations.</li>
+        </ul>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">07</div>
+        <h4>Intellectual Property</h4>
+        <p>All content on this website — including text, images, logos, product photos, and design elements — is the property of <%= settings.businessName %> and may not be reproduced, distributed, or used without prior written permission.</p>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">08</div>
+        <h4>Limitation of Liability</h4>
+        <p><%= settings.businessName %> shall not be liable for any indirect, incidental, or consequential damages arising from the use of our products or website. Our maximum liability is limited to the value of the specific product or service in question.</p>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">09</div>
+        <h4>Governing Law</h4>
+        <p>These Terms &amp; Conditions are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in <%= settings.city || 'Munger, Bihar' %>.</p>
+      </div>
+
+      <div class="tc-section fade-up">
+        <div class="tc-num">10</div>
+        <h4>Contact for Legal Matters</h4>
+        <p>For any legal queries, disputes, or clarifications regarding these Terms &amp; Conditions, please contact us at:</p>
+        <div class="d-flex flex-wrap gap-3 mt-3">
+          <a href="mailto:<%= settings.email %>" class="btn btn-sm fw-bold" style="background:var(--gold-grad);color:var(--navy-deep);border-radius:8px;padding:8px 18px;"><i class="fa-solid fa-envelope me-1"></i> <%= settings.email %></a>
+          <a href="tel:<%= settings.phone.split(',')[0].trim() %>" class="btn btn-sm fw-bold" style="background:rgba(201,146,42,0.1);color:var(--gold);border:1px solid rgba(201,146,42,0.3);border-radius:8px;padding:8px 18px;"><i class="fa-solid fa-phone me-1"></i> <%= settings.phone %></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .tc-intro {
+    background:#fff; border-left:4px solid var(--gold);
+    border-radius:14px; padding:1.5rem 2rem;
+    margin-bottom:2rem; font-size:14.5px;
+    color:var(--text-muted); line-height:1.8;
+    box-shadow:var(--shadow-sm);
+  }
+  .tc-section {
+    background:#fff; border-radius:14px;
+    padding:1.75rem 2rem 1.75rem 4.5rem;
+    margin-bottom:1.25rem;
+    box-shadow:var(--shadow-sm);
+    border:1px solid rgba(201,146,42,0.1);
+    position:relative;
+    transition:box-shadow 0.25s ease;
+  }
+  .tc-section:hover { box-shadow:var(--shadow-md); }
+  .tc-num {
+    position:absolute; left:1.25rem; top:1.6rem;
+    font-family:'Playfair Display',serif; font-size:1.5rem;
+    font-weight:800; color:rgba(201,146,42,0.25); line-height:1;
+  }
+  .tc-section h4 { font-size:1.02rem; font-weight:700; color:var(--navy); margin-bottom:0.75rem; }
+  .tc-section p, .tc-section li { font-size:13.5px; color:var(--text-muted); line-height:1.8; }
+  .tc-section ul { padding-left:1.25rem; margin-bottom:0; }
+  .tc-section li { margin-bottom:6px; }
+</style>
+
+<%- include('partials/footer') %>

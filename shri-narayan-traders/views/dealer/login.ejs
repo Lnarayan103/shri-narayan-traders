@@ -1,0 +1,80 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="bg-white p-4 p-md-5 rounded shadow-sm border border-top border-warning border-3">
+        <div class="text-center mb-4">
+          <i class="fa-solid fa-truck-ramp-box text-warning display-4 mb-2"></i>
+          <h2 class="fw-bold text-dark font-playfair">Dealer Sign In</h2>
+          <p class="text-secondary small">Access bulk ordering, wholesale rates, and GST invoices</p>
+        </div>
+
+        <div id="loginAlert" class="alert d-none"></div>
+
+        <form id="loginForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Username</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-user text-muted"></i></span>
+              <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <div class="d-flex justify-content-between">
+              <label class="form-label fw-bold">Password</label>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-lock text-muted"></i></span>
+              <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold mb-3">Sign In to Dashboard</button>
+        </form>
+
+        <div class="text-center border-top pt-3 small">
+          <span class="text-secondary">Not a registered dealer?</span>
+          <a href="/dealer/register" class="fw-bold text-decoration-none text-primary ms-1">Register Dealer Account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById('loginAlert');
+    alertBox.className = 'alert d-none';
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alertBox.className = 'alert alert-success';
+        alertBox.innerText = 'Login successful! Redirecting...';
+        setTimeout(() => {
+          window.location.href = result.role === 'admin' ? '/admin/dashboard' : '/dealer/dashboard';
+        }, 1000);
+      } else {
+        alertBox.className = 'alert alert-danger';
+        alertBox.innerText = result.error || 'Invalid credentials. Please try again.';
+      }
+    } catch (err) {
+      alertBox.className = 'alert alert-danger';
+      alertBox.innerText = 'Network error during sign in.';
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

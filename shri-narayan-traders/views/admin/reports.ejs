@@ -1,0 +1,54 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <h4 class="mb-4">Reports</h4>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><label class="form-label small fw-bold">From</label><input type="date" id="from" class="form-control"></div>
+    <div class="col-md-3"><label class="form-label small fw-bold">To</label><input type="date" id="to" class="form-control"></div>
+    <div class="col-md-6 d-flex align-items-end gap-2">
+      <button class="btn btn-primary" onclick="loadGst()">GST Report</button>
+      <button class="btn btn-outline-primary" onclick="loadSales()">Sales / P&L</button>
+      <button class="btn btn-outline-secondary" onclick="exportCsv()">Export CSV</button>
+    </div>
+  </div>
+  <div id="summary" class="row g-3 mb-4"></div>
+  <div class="admin-card table-responsive"><table class="table table-sm mb-0" id="rptTable">
+    <thead class="table-light" id="rptHead"></thead><tbody id="rptBody"></tbody>
+  </table></div>
+</div>
+<script>
+let lastRows=[];
+async function loadGst(){
+  const q=new URLSearchParams({from:from.value,to:to.value});
+  const r=await fetch('/api/reports/gst?'+q); const d=await r.json();
+  if(!d.success) return alert(d.error||'Error');
+  const s=d.summary;
+  summary.innerHTML=`
+    <div class="col-md-2"><div class="admin-card p-3 text-center"><div class="small text-muted">Invoices</div><div class="fs-4 fw-bold">${s.invoiceCount}</div></div></div>
+    <div class="col-md-2"><div class="admin-card p-3 text-center"><div class="small text-muted">Taxable</div><div class="fs-5 fw-bold">₹${s.taxableValue.toLocaleString('en-IN')}</div></div></div>
+    <div class="col-md-2"><div class="admin-card p-3 text-center"><div class="small text-muted">CGST</div><div class="fs-5 fw-bold">₹${s.cgst.toLocaleString('en-IN')}</div></div></div>
+    <div class="col-md-2"><div class="admin-card p-3 text-center"><div class="small text-muted">SGST</div><div class="fs-5 fw-bold">₹${s.sgst.toLocaleString('en-IN')}</div></div></div>
+    <div class="col-md-2"><div class="admin-card p-3 text-center"><div class="small text-muted">Total</div><div class="fs-5 fw-bold" style="color:#c9922a">₹${s.grandTotal.toLocaleString('en-IN')}</div></div></div>`;
+  rptHead.innerHTML='<tr><th>Order</th><th>Date</th><th>Customer</th><th>GSTIN</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>Total</th></tr>';
+  lastRows=d.rows;
+  rptBody.innerHTML=d.rows.map(x=>`<tr><td>${x.orderId||''}</td><td>${x.date?new Date(x.date).toLocaleDateString('en-IN'):''}</td><td>${x.customer}</td><td>${x.gstin}</td><td>₹${x.taxable.toLocaleString('en-IN')}</td><td>₹${x.cgst.toLocaleString('en-IN')}</td><td>₹${x.sgst.toLocaleString('en-IN')}</td><td>₹${x.total.toLocaleString('en-IN')}</td></tr>`).join('')||'<tr><td colspan="8" class="text-center text-muted">No data</td></tr>';
+}
+async function loadSales(){
+  const q=new URLSearchParams({from:from.value,to:to.value});
+  const r=await fetch('/api/reports/sales?'+q); const d=await r.json();
+  if(!d.success) return alert(d.error||'Error');
+  summary.innerHTML=`
+    <div class="col-md-3"><div class="admin-card p-3 text-center"><div class="small text-muted">Orders</div><div class="fs-4 fw-bold">${d.sales.orderCount}</div></div></div>
+    <div class="col-md-3"><div class="admin-card p-3 text-center"><div class="small text-muted">Revenue</div><div class="fs-4 fw-bold text-success">₹${d.sales.revenue.toLocaleString('en-IN')}</div></div></div>
+    <div class="col-md-3"><div class="admin-card p-3 text-center"><div class="small text-muted">Expenses</div><div class="fs-4 fw-bold text-danger">₹${d.expenses.total.toLocaleString('en-IN')}</div></div></div>
+    <div class="col-md-3"><div class="admin-card p-3 text-center"><div class="small text-muted">Approx Profit</div><div class="fs-4 fw-bold" style="color:#001f4d">₹${d.profitApprox.toLocaleString('en-IN')}</div></div></div>`;
+  rptHead.innerHTML=''; rptBody.innerHTML='<tr><td class="text-muted p-4">Summary only — use GST Report for line items.</td></tr>';
+  lastRows=[];
+}
+function exportCsv(){
+  if(!lastRows.length) return alert('Load GST Report first');
+  const header='Order,Date,Customer,GSTIN,Taxable,CGST,SGST,Total\n';
+  const body=lastRows.map(x=>[x.orderId,x.date,JSON.stringify(x.customer),x.gstin,x.taxable,x.cgst,x.sgst,x.total].join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([header+body],{type:'text/csv'})); a.download='gst-report.csv'; a.click();
+}
+</script>
+<%- include('../partials/admin-footer') %>

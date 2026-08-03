@@ -1,0 +1,35 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between mb-4"><h4 class="mb-0">Suppliers</h4>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#supModal">+ Add Supplier</button></div>
+  <div class="admin-card table-responsive"><table class="table table-hover mb-0">
+    <thead class="table-light"><tr><th>Name</th><th>Phone</th><th>GSTIN</th><th>Address</th><th></th></tr></thead>
+    <tbody>
+      <% (suppliers||[]).forEach(s => { %>
+      <tr><td class="fw-bold"><%= s.name %></td><td><%= s.phone||'—' %></td><td><%= s.gstin||'—' %></td>
+        <td class="small"><%= s.address||'—' %></td>
+        <td><button class="btn btn-sm btn-outline-danger" onclick="del('/api/suppliers/<%= s._id %>')">Del</button></td></tr>
+      <% }) %>
+      <% if(!(suppliers||[]).length){ %><tr><td colspan="5" class="text-center text-muted py-4">No suppliers</td></tr><% } %>
+    </tbody></table></div>
+</div>
+<div class="modal fade" id="supModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Add Supplier</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input id="sName" class="form-control mb-2" placeholder="Name *">
+    <input id="sPhone" class="form-control mb-2" placeholder="Phone">
+    <input id="sGstin" class="form-control mb-2" placeholder="GSTIN">
+    <input id="sEmail" class="form-control mb-2" placeholder="Email">
+    <textarea id="sAddr" class="form-control" placeholder="Address"></textarea>
+  </div>
+  <div class="modal-footer"><button class="btn btn-primary" onclick="saveSup()">Save</button></div>
+</div></div></div>
+<script>
+async function saveSup(){
+  const body={name:sName.value,phone:sPhone.value,gstin:sGstin.value,email:sEmail.value,address:sAddr.value};
+  const r=await fetch('/api/suppliers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok) location.reload(); else alert('Failed');
+}
+async function del(url){ if(confirm('Move to recycle bin?')){ await fetch(url,{method:'DELETE'}); location.reload(); }}
+</script>
+<%- include('../partials/admin-footer') %>

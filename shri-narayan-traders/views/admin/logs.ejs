@@ -1,0 +1,107 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Activity Logs" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">System Activity Logs</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Review security events, database updates, and login audits</p>
+    </div>
+    <div>
+      <button class="btn btn-outline-danger fw-bold btn-sm" onclick="clearAuditLogs()"><i class="fa-solid fa-trash-can me-1"></i> Clear Logs</button>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow-sm border">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle" id="logsTable">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Authorized User</th>
+            <th>Event / Action</th>
+            <th>Description & Context</th>
+          </tr>
+        </thead>
+        <tbody id="logsBody">
+          <tr>
+            <td colspan="4" class="text-center py-5 text-muted">
+              <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+              Loading security audit records...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchLogs();
+  });
+
+  async function fetchLogs() {
+    const tbody = document.getElementById('logsBody');
+    try {
+      const response = await fetch('/api/system/logs');
+      const logs = await response.json();
+      
+      if (!response.ok) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-danger text-center py-4">Error: ${logs.error || 'Failed loading logs'}</td></tr>`;
+        return;
+      }
+      
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-muted text-center py-5">No activity logs recorded yet.</td></tr>`;
+        return;
+      }
+      
+      let html = '';
+      logs.forEach(log => {
+        const date = new Date(log.createdAt).toLocaleString();
+        let badgeClass = 'bg-secondary';
+        
+        if (log.action.includes('Delete') || log.action.includes('Clear')) badgeClass = 'bg-danger';
+        else if (log.action.includes('Create') || log.action.includes('Add')) badgeClass = 'bg-success';
+        else if (log.action.includes('Login') || log.action.includes('Success')) badgeClass = 'bg-primary';
+        else if (log.action.includes('Update') || log.action.includes('Change')) badgeClass = 'bg-warning text-dark';
+        
+        html += `
+          <tr>
+            <td class="text-muted small" style="white-space: nowrap;">${date}</td>
+            <td>
+              <strong class="text-dark">${log.username}</strong>
+              <small class="text-muted d-block" style="font-size: 10px;">ID: ${log.userId}</small>
+            </td>
+            <td>
+              <span class="badge ${badgeClass} text-uppercase px-2 py-1">${log.action}</span>
+            </td>
+            <td class="text-secondary small">${log.details ? (typeof log.details === 'string' ? log.details : JSON.stringify(log.details)) : 'N/A'}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-danger text-center py-4">Network error loading logs.</td></tr>`;
+    }
+  }
+
+  async function clearAuditLogs() {
+    if (!confirm('Are you absolutely sure you want to clear all security activity logs? This action is permanent.')) return;
+    try {
+      const response = await fetch('/api/system/logs', { method: 'DELETE' });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || 'Audit logs cleared successfully.');
+        fetchLogs();
+      } else {
+        alert(result.error || 'Permission denied.');
+      }
+    } catch(err) {
+      alert('Error connecting to api server.');
+    }
+  }
+</script>
+
+<%- include('../partials/admin-footer') %>

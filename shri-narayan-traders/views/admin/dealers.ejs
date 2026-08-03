@@ -1,0 +1,99 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold font-playfair text-dark mb-0">Manage Dealer Partners</h1>
+      <p class="text-secondary small">Approve or reject wholesale dealer registration requests</p>
+    </div>
+    <div>
+      <a href="/admin/dashboard" class="btn btn-outline-dark fw-bold"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow-sm border">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Business Details</th>
+            <th>Contact Person</th>
+            <th>Phone / Email</th>
+            <th class="text-center">GSTIN Details</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (dealers && dealers.length > 0) { %>
+            <% dealers.forEach(dealer => { %>
+              <tr id="row-<%= dealer._id %>">
+                <td>
+                  <strong class="text-dark d-block"><%= dealer.businessName %></strong>
+                  <span class="text-muted small"><%= dealer.address || 'Address Not Added' %></span>
+                </td>
+                <td>
+                  <strong class="text-secondary"><%= dealer.username %></strong>
+                </td>
+                <td>
+                  <span class="d-block"><i class="fa-solid fa-phone text-muted me-1 small"></i> <%= dealer.phone %></span>
+                  <span class="d-block text-muted small"><i class="fa-solid fa-envelope text-muted me-1 small"></i> <%= dealer.email %></span>
+                </td>
+                <td class="text-center text-uppercase">
+                  <span class="badge bg-secondary"><%= dealer.gstin || 'Unregistered URP' %></span>
+                </td>
+                <td class="text-center">
+                  <% if (dealer.status === 'approved') { %>
+                    <span class="badge bg-success-subtle text-success border border-success"><i class="fa-solid fa-circle-check me-1"></i> Approved</span>
+                  <% } else if (dealer.status === 'rejected') { %>
+                    <span class="badge bg-danger-subtle text-danger border border-danger"><i class="fa-solid fa-circle-xmark me-1"></i> Rejected</span>
+                  <% } else { %>
+                    <span class="badge bg-warning-subtle text-warning border border-warning"><i class="fa-solid fa-hourglass-half me-1"></i> Pending Approval</span>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <% if (dealer.status !== 'approved') { %>
+                    <button class="btn btn-success btn-sm fw-bold me-1" onclick="updateDealerStatus('<%= dealer._id %>', 'approved')"><i class="fa-solid fa-circle-check"></i> Approve</button>
+                  <% } %>
+                  <% if (dealer.status !== 'rejected') { %>
+                    <button class="btn btn-danger btn-sm fw-bold" onclick="updateDealerStatus('<%= dealer._id %>', 'rejected')"><i class="fa-solid fa-circle-xmark"></i> Reject</button>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">No dealers registered in the database yet.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function updateDealerStatus(id, status) {
+    if(!confirm(`Are you sure you want to change dealer status to ${status}?`)) return;
+    
+    try {
+      const response = await fetch(`/api/admin/dealers/${id}/approve`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert(result.message || 'Dealer status updated successfully.');
+        window.location.reload();
+      } else {
+        alert(result.error || 'Failed to update status.');
+      }
+    } catch(err) {
+      alert('Network error while processing status update.');
+    }
+  }
+</script>
+
+<%- include('../partials/footer') %>

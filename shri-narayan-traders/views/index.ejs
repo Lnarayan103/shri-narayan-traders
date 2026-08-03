@@ -1,0 +1,648 @@
+<%- include('partials/header') %>
+<% const offers = locals.activeOffers || locals.offers || []; const featuredProducts = locals.recentProducts || locals.featuredProducts || []; %>
+
+<!-- ══ HERO ══ -->
+<section class="hero-section position-relative overflow-hidden" style="background: var(--navy-grad); min-height: 92vh; display:flex; align-items:center;">
+  <div class="hero-particles" id="heroParticles"></div>
+  <div class="container position-relative" style="z-index:2;">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="fade-up">
+          <span class="welcome-pill">🙏 &nbsp;Welcome to</span>
+        </div>
+        <h1 class="hero-title fade-up fade-up-d1">
+          <span class="hero-hindi"><%= settings.businessNameHindi || 'श्री नारायण ट्रेडर्स' %></span>
+          <span class="hero-en"><%= settings.businessName %></span>
+        </h1>
+        <p class="hero-sub fade-up fade-up-d2"><%= settings.heroSubtitle || 'Premium Hardware Supplier · Furniture Manufacturer · Aluminium Fabrication Works — Serving customers with quality products and honest service.' %></p>
+        <div class="d-flex flex-wrap gap-3 fade-up fade-up-d3">
+          <a href="/products" class="btn-hero-primary"><i class="fa-solid fa-boxes-stacked me-2"></i>Browse Products</a>
+          <a href="/contact?subject=Request%20Quote" class="btn-hero-outline"><i class="fa-solid fa-file-invoice-dollar me-2"></i>Get Free Quote</a>
+        </div>
+        <!-- Stats -->
+        <div class="hero-stats fade-up fade-up-d4">
+          <div class="hstat"><span class="hstat-num" data-target="500">0</span><span class="hstat-plus">+</span><span class="hstat-label">Products</span></div>
+          <div class="hstat-div"></div>
+          <div class="hstat"><span class="hstat-num" data-target="5000">0</span><span class="hstat-plus">+</span><span class="hstat-label">Customers</span></div>
+          <div class="hstat-div"></div>
+          <div class="hstat"><span class="hstat-num" data-target="10">0</span><span class="hstat-plus">+</span><span class="hstat-label">Years</span></div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block fade-up fade-up-d2">
+        <div class="hero-visual-box">
+          <div class="hv-center"><span style="font-size:5rem;">🏗️</span><p class="text-white-50 mt-2 mb-0" style="font-size:13px;">Hardware · Furniture · Aluminium</p></div>
+          <div class="hv-badge b1"><i class="fa-solid fa-check-circle text-success me-1"></i> ISI Certified Products</div>
+          <div class="hv-badge b2"><i class="fa-solid fa-truck text-warning me-1"></i> Fast Local Delivery</div>
+          <div class="hv-badge b3"><i class="fa-solid fa-tag text-info me-1"></i> Best Prices</div>
+          <div class="hv-badge b4"><i class="fa-solid fa-headset text-warning me-1"></i> 24×7 Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint"><span>Scroll</span><div class="scroll-chevron"></div></div>
+</section>
+
+<!-- ══ LIVE OFFERS TICKER ══ -->
+<% if(offers && offers.length > 0) { %>
+<div class="offers-ticker">
+  <div class="ticker-label"><i class="fa-solid fa-bolt me-1"></i> LIVE OFFERS</div>
+  <div class="ticker-track">
+    <% offers.forEach(offer => { %>
+    <span class="ticker-item">🏷️ <strong><%= offer.title %></strong> — <%= offer.discount %> &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span>
+    <% }) %>
+    <% offers.forEach(offer => { %>
+    <span class="ticker-item">🏷️ <strong><%= offer.title %></strong> — <%= offer.discount %> &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span>
+    <% }) %>
+  </div>
+</div>
+<% } %>
+
+<!-- ══ OFFER CARDS ══ -->
+<% if(offers && offers.length > 0) { %>
+<section class="py-5" style="background: linear-gradient(135deg, #001835 0%, #000f2b 100%);">
+  <div class="container">
+    <div class="row align-items-center mb-4">
+      <div class="col">
+        <span class="section-tag text-warning fade-up"><i class="fa-solid fa-fire me-1"></i> Hot Deals</span>
+        <h2 class="font-playfair text-white mb-0 fade-up fade-up-d1">Current Offers</h2>
+      </div>
+      <div class="col-auto fade-up"><a href="/offers" class="btn-outline-gold">View All <i class="fa-solid fa-arrow-right ms-1"></i></a></div>
+    </div>
+    <div class="row g-3">
+      <% offers.slice(0,3).forEach((offer, i) => { %>
+      <div class="col-md-4 fade-up" style="animation-delay:<%=i*0.1%>s">
+        <div class="offer-card-home">
+          <div class="offer-tag"><%= offer.tag || 'Special' %></div>
+          <div class="offer-discount-big"><%= offer.discount %></div>
+          <h5><%= offer.title %></h5>
+          <p><%= offer.description %></p>
+          <div class="offer-validity-line"><i class="fa-regular fa-clock me-1"></i> <%= offer.validity %></div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ══ CATEGORIES ══ -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <span class="section-tag">What We Offer</span>
+      <h2 class="font-playfair mt-1">Browse by Category</h2>
+      <div class="snt-divider mx-auto mt-2"></div>
+    </div>
+    <div class="row g-3">
+      <% const cats = [
+        {icon:'🔩',label:'Hardware',sub:'Screws, Bolts, Locks & Fittings',slug:'hardware'},
+        {icon:'🪑',label:'Home Furniture',sub:'Sofas, Beds, Wardrobes & More',slug:'furniture'},
+        {icon:'💼',label:'Office Furniture',sub:'Chairs, Desks & Workstations',slug:'office'},
+        {icon:'🚪',label:'Aluminium Doors',sub:'Custom Fabricated Doors',slug:'doors'},
+        {icon:'🪟',label:'Aluminium Windows',sub:'Sliding & Casement Windows',slug:'windows'},
+        {icon:'🔧',label:'Tools',sub:'Hand Tools & Power Tools',slug:'tools'},
+      ]; %>
+      <% cats.forEach((cat, i) => { %>
+      <div class="col-lg-2 col-md-4 col-6 fade-up" style="animation-delay:<%=i*0.07%>s">
+        <a href="/products?category=<%= cat.slug %>" class="cat-card-home">
+          <div class="cat-icon-home"><%= cat.icon %></div>
+          <h6><%= cat.label %></h6>
+          <p><%= cat.sub %></p>
+        </a>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURED PRODUCTS ══ -->
+<section class="py-5" style="background:var(--cream);">
+  <div class="container">
+    <div class="d-flex align-items-end justify-content-between mb-4 fade-up">
+      <div>
+        <span class="section-tag">New Arrivals</span>
+        <h2 class="font-playfair mt-1 mb-0">Featured Products</h2>
+      </div>
+      <a href="/products" class="btn-outline-gold d-none d-md-inline-block">All Products <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row g-3">
+      <% if(featuredProducts && featuredProducts.length > 0) { %>
+        <% featuredProducts.slice(0,8).forEach((product, i) => { %>
+        <div class="col-lg-3 col-md-4 col-6 fade-up" style="animation-delay:<%=i*0.07%>s">
+          <div class="product-card-home">
+            <div class="product-img-wrap">
+              <% if(product.imageUrl) { %>
+              <img src="<%= product.imageUrl %>" alt="<%= product.name %>" loading="lazy" />
+              <% } else { %>
+              <span class="product-emoji">📦</span>
+              <% } %>
+              <% if(product.isNew) { %><span class="prod-badge new">New</span><% } %>
+              <% if(product.discount) { %><span class="prod-badge sale">-<%= product.discount %>%</span><% } %>
+            </div>
+            <div class="product-card-body">
+              <div class="prod-cat"><%= product.category %></div>
+              <div class="prod-name"><%= product.name %></div>
+              <div class="prod-price">
+                ₹<%= product.price.toLocaleString('en-IN') %>
+                <% if(product.originalPrice) { %><span class="prod-old">₹<%= product.originalPrice.toLocaleString('en-IN') %></span><% } %>
+              </div>
+            </div>
+            <div class="product-card-footer">
+              <a href="/products/<%= product._id %>" class="btn-prod-view">View Details</a>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12 text-center py-4 text-muted">
+          <i class="fa-solid fa-boxes-stacked fa-2x mb-2 d-block" style="color:var(--gold)"></i>
+          Products loading... Add products from Admin panel.
+        </div>
+      <% } %>
+    </div>
+    <div class="text-center mt-4 d-md-none fade-up">
+      <a href="/products" class="btn-outline-gold">View All Products <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY US ══ -->
+<section class="py-5" style="background:var(--navy-grad);">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <span class="section-tag text-warning">Our Promise</span>
+      <h2 class="font-playfair text-white mt-1">Why Choose Us?</h2>
+      <div class="snt-divider mx-auto mt-2"></div>
+    </div>
+    <div class="row g-3">
+      <% const whys = [
+        {icon:'fa-trophy',title:'Premium Quality',desc:'ISI certified products from verified manufacturers. Quality checked before every sale.'},
+        {icon:'fa-indian-rupee-sign',title:'Best Prices',desc:'Competitive pricing with regular offers. Bulk discounts available for dealers.'},
+        {icon:'fa-truck-fast',title:'Fast Delivery',desc:'Quick delivery within the city. Safe packaging ensures products reach intact.'},
+        {icon:'fa-handshake',title:'Trusted Since Years',desc:'Thousands of satisfied customers vouch for our reliability and honest service.'},
+      ]; %>
+      <% whys.forEach((w, i) => { %>
+      <div class="col-md-3 col-6 fade-up" style="animation-delay:<%=i*0.1%>s">
+        <div class="why-card-home">
+          <div class="why-icon-wrap"><i class="fa-solid <%= w.icon %>"></i></div>
+          <h6><%= w.title %></h6>
+          <p><%= w.desc %></p>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LOCATION MAP ══ -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <span class="section-tag">Find Us</span>
+      <h2 class="font-playfair mt-1">Visit Our Store</h2>
+      <div class="snt-divider mx-auto mt-2"></div>
+    </div>
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-4 fade-up">
+        <div class="store-info-card">
+          <div class="si-item"><i class="fa-solid fa-location-dot"></i><div><strong>Address</strong><p><%= settings.address %></p></div></div>
+          <div class="si-item"><i class="fa-solid fa-phone"></i><div><strong>Phone</strong><p><a href="tel:<%= settings.phone.split(',')[0].trim() %>"><%= settings.phone %></a></p></div></div>
+          <div class="si-item"><i class="fa-regular fa-clock"></i><div><strong>Working Hours</strong><p>Mon–Sat: 9:00 AM – 8:00 PM</p></div></div>
+          <div class="si-item"><i class="fa-solid fa-envelope"></i><div><strong>Email</strong><p><a href="mailto:<%= settings.email %>"><%= settings.email %></a></p></div></div>
+          <a href="/contact" class="btn-hero-primary d-block text-center mt-3" style="font-size:14px;">Get Directions <i class="fa-solid fa-location-arrow ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-8 fade-up fade-up-d1">
+        <div class="map-wrapper">
+          <% if(settings.mapEmbedUrl) { %>
+          <iframe src="<%= settings.mapEmbedUrl %>" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Shri Narayan Traders Location"></iframe>
+          <% } else { %>
+          <div class="map-placeholder-home">
+            <i class="fa-solid fa-map-location-dot fa-3x" style="color:var(--gold)"></i>
+            <p class="mt-3 mb-1 fw-semibold">Map Not Configured</p>
+            <p style="font-size:13px;color:var(--text-muted)">Admin Panel → Settings → Add Google Maps Embed URL</p>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CUSTOMER REVIEWS ══ -->
+<section class="py-5 bg-white">
+  <div class="container fade-up">
+    <div class="text-center mb-5">
+      <span class="section-tag text-gold"><i class="fa-solid fa-star me-1"></i> Testimonials</span>
+      <h2 class="font-playfair mt-1 text-dark">Customer Reviews</h2>
+      <p style="font-size:14px;color:var(--text-muted);">What our local clients say about our furniture fabrication and hardware supply</p>
+    </div>
+    
+    <div class="row g-4 justify-content-center">
+      <% if (locals.approvedReviews && approvedReviews.length > 0) { %>
+        <% approvedReviews.forEach(rev => { %>
+          <div class="col-md-4">
+            <div class="bg-light p-4 rounded shadow-sm h-100 border border-gold border-opacity-10">
+              <div class="text-warning mb-2" style="font-size: 13px;">
+                <% for(let i=1; i<=5; i++) { %>
+                  <i class="<%= i <= rev.rating ? 'fa-solid' : 'fa-regular' %> fa-star"></i>
+                <% } %>
+              </div>
+              <p class="italic text-secondary" style="font-size: 14px; line-height: 1.6;">"<%= rev.message %>"</p>
+              <hr class="my-2 border-secondary border-opacity-25">
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 14px;"><%= rev.name %></h6>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-md-4">
+          <div class="bg-light p-4 rounded shadow-sm h-100 border border-gold border-opacity-10">
+            <div class="text-warning mb-2" style="font-size: 13px;">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="italic text-secondary" style="font-size: 14px; line-height: 1.6;">"Shri Narayan Traders se humne apne naye office ke liye aluminium partition aur furniture banwaya tha. Kaam bahut hi safai se aur time par kiya gaya."</p>
+            <hr class="my-2 border-secondary border-opacity-25">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 14px;">Rajesh Kumar (Munger)</h6>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bg-light p-4 rounded shadow-sm h-100 border border-gold border-opacity-10">
+            <div class="text-warning mb-2" style="font-size: 13px;">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="italic text-secondary" style="font-size: 14px; line-height: 1.6;">"Superb wholesale rates. I am a local dealer and their supply chain for locks and screws is extremely prompt and reliable. Best prices in Bihar."</p>
+            <hr class="my-2 border-secondary border-opacity-25">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 14px;">Laxmi Hardware Store</h6>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bg-light p-4 rounded shadow-sm h-100 border border-gold border-opacity-10">
+            <div class="text-warning mb-2" style="font-size: 13px;">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            </div>
+            <p class="italic text-secondary" style="font-size: 14px; line-height: 1.6;">"Best quality aluminium doors and windows fabricator in Munger. Professional staff and premium fit-and-finish in fabrication."</p>
+            <hr class="my-2 border-secondary border-opacity-25">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 14px;">Sunita Devi (Kasim Bazar)</h6>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    
+    <div class="text-center mt-5 d-flex justify-content-center gap-3 flex-wrap">
+      <button class="btn btn-outline-gold btn-sm fw-bold px-4" type="button" data-bs-toggle="collapse" data-bs-target="#reviewFormCollapse">
+        <i class="fa-solid fa-pen-nib me-1"></i> Write a Website Review
+      </button>
+      <% if (settings.googleReviewLink) { %>
+        <a href="<%= settings.googleReviewLink %>" target="_blank" class="btn fw-bold px-4 text-dark shadow-sm btn-outline-gold" style="background:var(--gold-grad);color:var(--navy-deep) !important;border:none;">
+          <i class="fa-brands fa-google me-1"></i> Rate Us on Google
+        </a>
+      <% } %>
+    </div>
+    
+    <div class="collapse mt-4" id="reviewFormCollapse">
+      <div class="row justify-content-center text-start">
+        <div class="col-md-6">
+          <div class="card card-body shadow-sm border border-gold border-opacity-20" style="background: #fff; border-radius: 12px;">
+            <h5 class="fw-bold text-dark mb-3">Share Your Feedback</h5>
+            <div id="reviewAlert" class="alert d-none"></div>
+            <form id="submitReviewForm">
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-dark">Your Name *</label>
+                <input type="text" id="revName" class="form-control form-control-sm" placeholder="e.g. Ramesh Singh" required style="border-radius:6px;">
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-dark">Star Rating *</label>
+                <select id="revRating" class="form-select form-select-sm" required style="border-radius:6px;">
+                  <option value="5">5 Stars - Excellent</option>
+                  <option value="4">4 Stars - Very Good</option>
+                  <option value="3">3 Stars - Good</option>
+                  <option value="2">2 Stars - Fair</option>
+                  <option value="1">1 Star - Poor</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-dark">Review Comment *</label>
+                <textarea id="revMessage" class="form-control form-control-sm" rows="3" placeholder="Tell others about your purchase or site installation experience..." required style="border-radius:6px;"></textarea>
+              </div>
+              <button type="submit" class="btn fw-bold w-100 text-dark" style="background:var(--gold-grad);border:none;border-radius:6px;">Submit Review</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="py-5" style="background:var(--gold-grad);">
+  <div class="container text-center fade-up">
+    <h2 class="font-playfair fw-bold mb-2" style="color:var(--navy-deep);">Ready to Order? Get a Free Quote!</h2>
+    <p style="color:rgba(0,15,43,0.65); font-size:15px;" class="mb-4">Contact us with your requirements and we'll respond within hours.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="/contact?subject=Request%20Quote" class="btn fw-bold px-4 py-2" style="background:var(--navy-deep);color:#fff;border-radius:30px;"><i class="fa-solid fa-file-invoice-dollar me-2"></i>Request Quote</a>
+      <a href="tel:<%= settings.phone.split(',')[0].trim() %>" class="btn fw-bold px-4 py-2" style="background:rgba(0,15,43,0.15);color:var(--navy-deep);border:2px solid var(--navy-deep);border-radius:30px;"><i class="fa-solid fa-phone me-2"></i>Call Now</a>
+    </div>
+  </div>
+</section>
+
+<style>
+/* Hero */
+.hero-section { padding: 5rem 0 3rem; }
+.hero-particles { position:absolute;inset:0;overflow:hidden;pointer-events:none; }
+.hero-particles span { position:absolute;border-radius:50%;background:var(--gold);animation:floatP linear infinite;opacity:0; }
+@keyframes floatP { 0%{opacity:0;transform:translateY(100vh) scale(0)} 10%{opacity:.5} 90%{opacity:.2} 100%{opacity:0;transform:translateY(-50px) scale(1)} }
+.welcome-pill { background:rgba(201,146,42,0.2);border:1px solid rgba(201,146,42,0.4);color:var(--gold-light);padding:5px 16px;border-radius:30px;font-size:13px;font-weight:600;display:inline-block;margin-bottom:1rem; }
+.hero-title { display:flex;flex-direction:column;line-height:1.15;margin-bottom:1.25rem; }
+.hero-hindi { font-family:'Noto Sans Devanagari','Outfit',sans-serif;font-size:clamp(1.4rem,3vw,2.1rem);color:var(--gold-light);font-weight:700; }
+.hero-en    { font-family:'Playfair Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);color:#fff;font-weight:800; }
+.hero-sub   { color:rgba(255,255,255,0.65);font-size:15px;line-height:1.8;margin-bottom:2rem; }
+.btn-hero-primary { background:var(--gold-grad);color:var(--navy-deep);font-weight:700;font-size:14px;padding:11px 24px;border-radius:30px;border:none;text-decoration:none;display:inline-flex;align-items:center;transition:all .25s ease; }
+.btn-hero-primary:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,146,42,.45);color:var(--navy-deep); }
+.btn-hero-outline { background:transparent;border:2px solid rgba(255,255,255,.35);color:#fff;font-weight:600;font-size:14px;padding:10px 24px;border-radius:30px;text-decoration:none;display:inline-flex;align-items:center;transition:all .25s ease; }
+.btn-hero-outline:hover { background:rgba(255,255,255,.1);border-color:#fff;color:#fff; }
+.hero-stats { display:flex;align-items:center;gap:1.5rem;margin-top:2.5rem; }
+.hstat { text-align:center; }
+.hstat-num { font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:var(--gold-light); }
+.hstat-plus { color:var(--gold);font-size:1.3rem;font-weight:700; }
+.hstat-label { display:block;font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-top:2px; }
+.hstat-div { width:1px;height:36px;background:rgba(201,146,42,.3); }
+/* Hero visual */
+.hero-visual-box { width:100%;max-width:420px;margin:0 auto;aspect-ratio:1;background:rgba(255,255,255,.04);border:2px solid rgba(201,146,42,.2);border-radius:20px;display:flex;align-items:center;justify-content:center;position:relative;overflow:visible; }
+.hv-center { text-align:center; }
+.hv-badge { position:absolute;background:rgba(0,15,43,.85);backdrop-filter:blur(8px);border:1px solid rgba(201,146,42,.3);color:#fff;padding:7px 14px;border-radius:30px;font-size:12px;font-weight:600;white-space:nowrap;animation:floatBadge 3s ease-in-out infinite; }
+.b1{top:8%;left:-12%;animation-delay:0s} .b2{top:12%;right:-14%;animation-delay:.8s} .b3{bottom:18%;left:-16%;animation-delay:1.6s} .b4{bottom:8%;right:-10%;animation-delay:2.4s}
+@keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+/* Scroll hint */
+.hero-scroll-hint { position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;color:rgba(255,255,255,.3);font-size:10px;letter-spacing:.15em;text-transform:uppercase;z-index:2; }
+.scroll-chevron { width:18px;height:18px;border-right:2px solid rgba(201,146,42,.4);border-bottom:2px solid rgba(201,146,42,.4);transform:rotate(45deg);animation:scrollBounce 1.6s ease-in-out infinite; }
+@keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(5px)} }
+/* Ticker */
+.offers-ticker { background:var(--gold-grad);display:flex;align-items:center;overflow:hidden;height:38px; }
+.ticker-label { background:var(--navy-deep);color:var(--gold-light);padding:0 16px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;height:100%;display:flex;align-items:center;flex-shrink:0; }
+.ticker-track { display:flex;animation:ticker 30s linear infinite;white-space:nowrap; }
+.ticker-item { font-size:13px;color:var(--navy-deep);font-weight:600;padding:0 8px; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+/* Offer cards */
+.offer-card-home { 
+  background: linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px solid rgba(201,146,42,.25);
+  border-radius: 14px;
+  padding: 1.5rem;
+  height: 100%;
+  transition: all var(--dur) var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+.offer-card-home::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--gold-grad);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.offer-card-home:hover { 
+  border-color: var(--gold);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(201,146,42,.12);
+}
+.offer-card-home:hover::before {
+  opacity: 1;
+}
+.offer-tag { display:inline-block;background:var(--gold-grad);color:var(--navy-deep);font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:.75rem; }
+.offer-discount-big { font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:800;color:var(--gold-light);line-height:1;margin-bottom:.5rem; }
+.offer-card-home h5 { color:#fff;font-size:.95rem;margin-bottom:.4rem; }
+.offer-card-home p  { color:rgba(255,255,255,.55);font-size:13px;margin-bottom:.5rem; }
+.offer-validity-line { font-size:12px;color:var(--gold); }
+
+/* Categories */
+.cat-card-home { 
+  display: block;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(201,146,42,.12);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all var(--dur) var(--ease);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.cat-card-home::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 3px;
+  background: var(--gold-grad);
+  transform: scaleX(0);
+  transition: transform var(--dur) var(--ease);
+}
+.cat-card-home:hover { 
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(201,146,42,.35);
+  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%);
+}
+.cat-card-home:hover::after {
+  transform: scaleX(1);
+}
+.cat-icon-home { 
+  font-size: 2.3rem;
+  margin-bottom: .75rem;
+  display: block;
+  transition: transform var(--dur) var(--ease);
+}
+.cat-card-home:hover .cat-icon-home {
+  transform: scale(1.15) rotate(5deg);
+}
+.cat-card-home h6 { font-size:.85rem;font-weight:700;color:var(--navy);margin-bottom:.4rem; }
+.cat-card-home p  { font-size:11px;color:var(--text-muted);margin:0;line-height:1.5; }
+
+/* Products */
+.product-card-home { 
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(201,146,42,.1);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--dur) var(--ease);
+  position: relative;
+}
+.product-card-home::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 3.5px;
+  background: var(--gold-grad);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+  z-index: 5;
+}
+.product-card-home:hover { 
+  transform: translateY(-7px);
+  box-shadow: 0 15px 35px rgba(0, 31, 77, 0.12);
+  border-color: rgba(201,146,42,0.22);
+}
+.product-card-home:hover::before {
+  opacity: 1;
+}
+.product-img-wrap { 
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.product-img-wrap img { 
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+.product-card-home:hover .product-img-wrap img {
+  transform: scale(1.08);
+}
+.product-emoji { font-size:3rem; }
+.prod-badge { position:absolute;top:.6rem;left:.6rem;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2; }
+.prod-badge.new  { background:rgba(22,163,74,.15);color:#16a34a;border:1px solid #16a34a; }
+.prod-badge.sale { background:rgba(220,38,38,.12);color:#dc2626;border:1px solid #dc2626; }
+.product-card-body { padding:.9rem 1rem .6rem;flex:1; }
+.prod-cat  { font-size:10px;font-weight:700;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem; }
+.prod-name { font-size:.85rem;font-weight:600;color:var(--navy);line-height:1.4;margin-bottom:.5rem; }
+.prod-price { font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gold-dark); }
+.prod-old   { font-size:.78rem;color:var(--text-muted);text-decoration:line-through;margin-left:.25rem;font-family:'Outfit',sans-serif;font-weight:400; }
+.product-card-footer { padding:.6rem 1rem 1rem; }
+.btn-prod-view { 
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: rgba(0,31,77,.06);
+  color: var(--navy);
+  border: 1.5px solid rgba(0,31,77,.12);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--dur) var(--ease);
+}
+.btn-prod-view:hover { 
+  background: var(--navy-grad);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(0, 31, 77, 0.2);
+}
+
+/* Why Us */
+.why-card-home { 
+  text-align: center;
+  padding: 2.25rem 1.25rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(201,146,42,.15);
+  border-radius: 14px;
+  height: 100%;
+  transition: all var(--dur) var(--ease);
+}
+.why-card-home:hover { 
+  background: rgba(255,255,255,.07);
+  border-color: var(--gold);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.why-icon-wrap { 
+  width: 52px;
+  height: 52px;
+  background: rgba(201,146,42,.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.3rem;
+  color: var(--gold-light);
+  transition: transform var(--dur) var(--ease);
+}
+.why-card-home:hover .why-icon-wrap {
+  transform: scale(1.1) rotate(-5deg);
+}
+.why-card-home h6 { color:#fff;font-weight:700;margin-bottom:.5rem; }
+.why-card-home p  { color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin:0; }
+
+/* Store Info */
+.store-info-card { background:#fff;border-radius:16px;padding:1.75rem;box-shadow:var(--shadow-md);border:1px solid rgba(201,146,42,.1); }
+.si-item { display:flex;gap:.85rem;align-items:flex-start;margin-bottom:1.1rem; }
+.si-item i { color:var(--gold);font-size:1rem;margin-top:3px;flex-shrink:0;width:18px; }
+.si-item strong { display:block;font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px; }
+.si-item p { font-size:13.5px;color:var(--text-muted);margin:0; }
+.si-item a { color:var(--text-muted);text-decoration:none; }
+.si-item a:hover { color:var(--gold-dark); }
+.map-wrapper { border-radius:16px;overflow:hidden;height:360px;box-shadow:var(--shadow-md);border:2px solid rgba(201,146,42,.15); }
+.map-placeholder-home { height:100%;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted); }
+/* Shared outline btn */
+.btn-outline-gold { background:transparent;border:1.5px solid rgba(201,146,42,.5);color:var(--gold);font-size:13px;font-weight:600;padding:8px 18px;border-radius:30px;text-decoration:none;transition:all .2s ease;display:inline-flex;align-items:center; }
+.btn-outline-gold:hover { background:var(--gold-grad);color:var(--navy-deep);border-color:transparent; }
+
+@media(max-width:768px) {
+  .hero-section { min-height:100svh;padding:4rem 0 2rem; }
+  .hero-hindi { font-size:1.3rem; }
+  .hero-en    { font-size:1.9rem; }
+  .hero-stats { flex-wrap:wrap;gap:1rem; }
+  .hstat-num  { font-size:1.5rem; }
+  .map-wrapper { height:260px; }
+  .offers-ticker { height:32px; }
+  .ticker-label { font-size:9px;padding:0 10px; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Particles
+  const pc = document.getElementById('heroParticles');
+  if(pc){ for(let i=0;i<20;i++){ const s=document.createElement('span'); s.style.cssText=`left:${Math.random()*100}%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s`; pc.appendChild(s); } }
+  // Counter
+  const obs = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){const el=e.target,t=+el.dataset.target;let c=0;const s=t/80;const id=setInterval(()=>{c+=s;if(c>=t){c=t;clearInterval(id);}el.textContent=Math.floor(c).toLocaleString('en-IN');},16);obs.unobserve(el);}}),{threshold:.5});
+  document.querySelectorAll('.hstat-num').forEach(el=>obs.observe(el));
+
+  // Handle review submission
+  const reviewForm = document.getElementById('submitReviewForm');
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertBox = document.getElementById('reviewAlert');
+      alertBox.className = 'alert d-none';
+      
+      const data = {
+        name: document.getElementById('revName').value,
+        rating: document.getElementById('revRating').value,
+        message: document.getElementById('revMessage').value,
+      };
+      
+      try {
+        const response = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        
+        if (response.ok) {
+          alertBox.className = 'alert alert-success';
+          alertBox.innerText = 'Review submitted! It will appear on the homepage once approved by the admin.';
+          reviewForm.reset();
+        } else {
+          alertBox.className = 'alert alert-danger';
+          alertBox.innerText = result.error || 'Submission failed.';
+        }
+      } catch (err) {
+        alertBox.className = 'alert alert-danger';
+        alertBox.innerText = 'Network error submitting review.';
+      }
+    });
+  }
+});
+</script>
+
+<%- include('partials/footer') %>

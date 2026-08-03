@@ -1,0 +1,51 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">Quotations / Estimates</h4>
+      <p class="text-muted small mb-0">Create quotes, download PDF, convert to order later</p>
+    </div>
+    <a href="/admin/quotations/new" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i> New Quotation</a>
+  </div>
+  <div class="admin-card">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>#</th><th>Quote ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Valid Until</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <% if (quotations && quotations.length) { %>
+            <% quotations.forEach((q,i) => { %>
+            <tr>
+              <td class="small text-muted"><%= i+1 %></td>
+              <td class="fw-bold"><%= q.quoteId %></td>
+              <td>
+                <div class="fw-semibold"><%= q.customerName %></div>
+                <div class="small text-muted"><%= q.customerPhone || '' %></div>
+              </td>
+              <td class="fw-bold" style="color:#c9922a;">₹<%= (q.totalAmount||0).toLocaleString('en-IN') %></td>
+              <td><span class="badge bg-secondary"><%= (q.status||'draft').toUpperCase() %></span></td>
+              <td class="small"><%= q.validUntil ? new Date(q.validUntil).toLocaleDateString('en-IN') : '—' %></td>
+              <td>
+                <a href="/api/quotations/<%= q._id %>/pdf" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-file-pdf"></i></a>
+                <button class="btn btn-sm btn-outline-danger" onclick="delQuote('<%= q._id %>')"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="7" class="text-center py-5 text-muted">No quotations yet. Create your first estimate.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+async function delQuote(id) {
+  if (!confirm('Move this quotation to Recycle Bin?')) return;
+  const res = await fetch('/api/quotations/' + id, { method: 'DELETE' });
+  if (res.ok) location.reload();
+  else alert('Failed');
+}
+</script>
+<%- include('../partials/admin-footer') %>

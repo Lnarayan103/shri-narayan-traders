@@ -1,0 +1,54 @@
+<%- include('../partials/admin-header') %>
+<div class="admin-content">
+  <div class="d-flex justify-content-between mb-4"><h4 class="mb-0">Purchases / Stock In</h4>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#purModal">+ New Purchase</button></div>
+  <div class="admin-card table-responsive"><table class="table table-hover mb-0">
+    <thead class="table-light"><tr><th>ID</th><th>Supplier</th><th>Bill No</th><th>Total</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      <% (purchases||[]).forEach(p => { %>
+      <tr><td class="fw-bold"><%= p.purchaseId %></td><td><%= p.supplierName||'—' %></td><td><%= p.billNo||'—' %></td>
+        <td>₹<%= (p.totalAmount||0).toLocaleString('en-IN') %></td>
+        <td class="small"><%= p.createdAt?new Date(p.createdAt).toLocaleDateString('en-IN'):'—' %></td>
+        <td><button class="btn btn-sm btn-outline-danger" onclick="del('/api/purchases/<%= p._id %>')">Del</button></td></tr>
+      <% }) %>
+      <% if(!(purchases||[]).length){ %><tr><td colspan="6" class="text-center text-muted py-4">No purchases</td></tr><% } %>
+    </tbody></table></div>
+</div>
+<div class="modal fade" id="purModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">New Purchase</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <select id="pSup" class="form-select mb-2"><option value="">Select supplier</option>
+      <% (suppliers||[]).forEach(s=>{ %><option value="<%= s._id %>" data-name="<%= s.name %>"><%= s.name %></option><% }) %>
+    </select>
+    <input id="pBill" class="form-control mb-2" placeholder="Supplier Bill No">
+    <div id="pItems"></div>
+    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addPItem()">+ Item</button>
+  </div>
+  <div class="modal-footer"><button class="btn btn-primary" onclick="savePur()">Save & Stock In</button></div>
+</div></div></div>
+<script>
+function addPItem(){
+  const d=document.createElement('div'); d.className='row g-2 mb-2 p-row';
+  d.innerHTML=`<div class="col-5"><select class="form-select form-select-sm p-prod"><option value="custom">Custom</option>
+    <% (products||[]).forEach(pr=>{ %><option value="<%= pr._id %>"><%= pr.name %></option><% }) %></select></div>
+    <div class="col-2"><input class="form-control form-control-sm p-name" placeholder="Name"></div>
+    <div class="col-2"><input type="number" class="form-control form-control-sm p-qty" value="1" min="1"></div>
+    <div class="col-2"><input type="number" class="form-control form-control-sm p-rate" value="0" min="0"></div>
+    <div class="col-1"><button class="btn btn-sm btn-outline-danger" onclick="this.closest('.p-row').remove()">×</button></div>`;
+  document.getElementById('pItems').appendChild(d);
+}
+addPItem();
+async function savePur(){
+  const sel=document.getElementById('pSup');
+  const items=[...document.querySelectorAll('.p-row')].map(r=>({
+    productId:r.querySelector('.p-prod').value,
+    name:r.querySelector('.p-name').value||r.querySelector('.p-prod').selectedOptions[0]?.text,
+    qty:+r.querySelector('.p-qty').value, rate:+r.querySelector('.p-rate').value
+  }));
+  const body={supplierId:sel.value,supplierName:sel.selectedOptions[0]?.dataset?.name||sel.selectedOptions[0]?.text,billNo:pBill.value,items};
+  const r=await fetch('/api/purchases',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok) location.reload(); else alert('Failed');
+}
+async function del(url){ if(confirm('Delete?')){ await fetch(url,{method:'DELETE'}); location.reload(); }}
+</script>
+<%- include('../partials/admin-footer') %>

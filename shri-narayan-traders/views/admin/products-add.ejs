@@ -1,0 +1,303 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = typeof product !== 'undefined' ? 'Edit Product' : 'Add Product' %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0"><%= typeof product !== 'undefined' ? 'Edit Product' : 'Add New Product' %></h4>
+      <p class="text-muted mb-0" style="font-size:13px">Fill in product details below</p>
+    </div>
+    <a href="/admin/products" class="btn-admin-sm"><i class="fa-solid fa-arrow-left me-1"></i> Back</a>
+  </div>
+
+  <div id="formAlert"></div>
+
+  <form id="productForm">
+    <div class="row g-3">
+      <!-- Left -->
+      <div class="col-lg-8">
+        <div class="admin-card">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-circle-info me-2 text-warning"></i>Basic Information</h5></div>
+          <div style="padding:1.25rem;">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label-admin">Product Name *</label>
+                <input type="text" id="name" name="name" class="form-control-admin" placeholder="e.g. Heavy Duty Drill Machine 750W" value="<%= typeof product !== 'undefined' ? product.name : '' %>" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-admin">Category *</label>
+                <select id="category" name="category" class="form-control-admin" required>
+                  <option value="">Select category...</option>
+                  <% ['Hardware','Furniture','Office Furniture','Aluminium Doors','Aluminium Windows','Tools','Electrical','Plumbing','Other'].forEach(c=>{ %>
+                  <option value="<%= c %>" <%= typeof product !== 'undefined' && product.category && product.category.trim().toLowerCase()===c.trim().toLowerCase() ? 'selected' : '' %>><%= c %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-admin">Brand</label>
+                <input type="text" name="brand" class="form-control-admin" placeholder="e.g. Bosch, Stanley, Local" value="<%= typeof product !== 'undefined' ? (product.brand||'') : '' %>" />
+              </div>
+              <div class="col-12">
+                <label class="form-label-admin">Description</label>
+                <textarea id="description" name="description" class="form-control-admin" rows="4" placeholder="Describe the product — specifications, material, usage, size, color..."><%= typeof product !== 'undefined' ? (product.description||'') : '' %></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label-admin">Key Specifications</label>
+                <input type="text" id="specifications" name="specifications" class="form-control-admin" placeholder="Material: Steel, Size: 12 inch, Finish: Chrome Plated" value="<%= typeof product !== 'undefined' ? (product.specifications||'') : '' %>" />
+              </div>
+              <div class="col-12">
+                <label class="form-label-admin">SEO Meta Description</label>
+                <textarea id="metaDescription" name="metaDescription" class="form-control-admin" rows="2" placeholder="SEO description for website page"><%= typeof product !== 'undefined' ? (product.metaDescription||'') : '' %></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-indian-rupee-sign me-2 text-warning"></i>Pricing & Stock</h5></div>
+          <div style="padding:1.25rem;">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label-admin">Selling Price (₹) *</label>
+                <input type="number" name="price" class="form-control-admin" placeholder="0.00" min="0" step="0.01" value="<%= typeof product !== 'undefined' ? product.price : '' %>" required />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Original Price (₹)</label>
+                <input type="number" name="originalPrice" class="form-control-admin" placeholder="MRP / before discount" min="0" step="0.01" value="<%= typeof product !== 'undefined' ? (product.originalPrice||'') : '' %>" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Dealer Price (₹)</label>
+                <input type="number" name="dealerPrice" class="form-control-admin" placeholder="Wholesale price" min="0" step="0.01" value="<%= typeof product !== 'undefined' ? (product.dealerPrice||'') : '' %>" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Suggested Retail Price Range (₹)</label>
+                <input type="text" id="suggestedPrice" name="suggestedPrice" class="form-control-admin" placeholder="e.g. 450-650" value="<%= typeof product !== 'undefined' ? (product.suggestedPrice||'') : '' %>" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Stock Quantity *</label>
+                <input type="number" name="stock" class="form-control-admin" placeholder="0" min="0" value="<%= typeof product !== 'undefined' ? product.stock : '' %>" required />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Unit</label>
+                <select name="unit" class="form-control-admin">
+                  <% ['Piece','Set','Box','Kg','Meter','Roll','Pair','Dozen','Lot'].forEach(u=>{ %>
+                  <option value="<%= u %>" <%= typeof product !== 'undefined' && product.unit===u ? 'selected' : '' %>><%= u %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">GST Rate (%)</label>
+                <select id="gstRate" name="gstRate" class="form-control-admin">
+                  <% [0,5,12,18,28].forEach(r=>{ %>
+                  <option value="<%= r %>" <%= typeof product !== 'undefined' && product.gstRate===r ? 'selected' : '' %>><%= r %>%</option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">HSN Code</label>
+                <input type="text" id="hsnCode" name="hsnCode" class="form-control-admin" placeholder="e.g. 8467" value="<%= typeof product !== 'undefined' ? (product.hsnCode||'') : '' %>" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label-admin">Low Stock Alert at</label>
+                <input type="number" name="lowStockThreshold" class="form-control-admin" placeholder="5" min="0" value="<%= typeof product !== 'undefined' ? (product.lowStockThreshold||5) : 5 %>" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="col-lg-4">
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-image me-2 text-warning"></i>Product Image</h5></div>
+          <div style="padding:1.25rem;text-align:center;">
+            <div id="imgPreview" style="width:100%;aspect-ratio:1;background:var(--cream);border-radius:12px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(201,146,42,.3);margin-bottom:.75rem;overflow:hidden;font-size:3rem;">📦</div>
+            <label class="form-label-admin">Image URL</label>
+            <input type="text" name="imageUrl" id="imageUrlInput" class="form-control-admin" placeholder="https://..." value="<%= typeof product !== 'undefined' ? (product.imageUrl||'') : '' %>" oninput="previewImg(this.value)" />
+            <div class="mt-2 text-start mb-2">
+              <label class="form-label-admin">Or Upload File</label>
+              <input type="file" name="image" id="imageFileInput" class="form-control-admin" accept="image/*" onchange="previewFile(this)" />
+            </div>
+            
+            <button type="button" id="btnAiGenerate" class="btn btn-outline-warning fw-bold w-100 mt-2">
+              ✨ Generate with AI
+            </button>
+            <div id="aiLoadingSpinner" class="text-center text-warning mt-2 d-none">
+              <span class="spinner-border spinner-border-sm"></span> AI is analyzing your product...
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card mb-3">
+          <div class="admin-card-header"><h5><i class="fa-solid fa-sliders me-2 text-warning"></i>Options</h5></div>
+          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;">
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <span style="font-size:13.5px;font-weight:600;">Featured on Home</span>
+              <button type="button" name="featured" onclick="toggleOpt(this)" class="toggle-switch <%= typeof product !== 'undefined' && product.featured ? 'on' : '' %>"><span></span></button>
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <span style="font-size:13.5px;font-weight:600;">Mark as New</span>
+              <button type="button" name="isNew" onclick="toggleOpt(this)" class="toggle-switch <%= typeof product !== 'undefined' && product.isNew ? 'on' : '' %>"><span></span></button>
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <span style="font-size:13.5px;font-weight:600;">Active / Visible</span>
+              <button type="button" name="isActive" onclick="toggleOpt(this)" class="toggle-switch on"><span></span></button>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-admin-primary w-100 justify-content-center" style="display:flex;padding:12px;">
+          <i class="fa-solid fa-floppy-disk me-2"></i>
+          <%= typeof product !== 'undefined' ? 'Update Product' : 'Save Product' %>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<style>
+.toggle-switch{width:42px;height:24px;background:#e2e8f0;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background .25s ease;}
+.toggle-switch span{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s ease;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle-switch.on{background:var(--gold);}
+.toggle-switch.on span{transform:translateX(18px);}
+</style>
+
+<script>
+function previewImg(url) {
+  const div = document.getElementById('imgPreview');
+  if (url) { div.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📦'">`; }
+  else { div.innerHTML = '📦'; }
+}
+function previewFile(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('imgPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+function toggleOpt(btn) { btn.classList.toggle('on'); }
+if (document.getElementById('imageUrlInput').value) previewImg(document.getElementById('imageUrlInput').value);
+
+// AI-powered details generator click handler
+document.getElementById('btnAiGenerate').addEventListener('click', async () => {
+  const productName = document.getElementById('name').value.trim();
+  const category = document.getElementById('category').value;
+  const imageInput = document.getElementById('imageFileInput');
+
+  if (!productName) {
+    adminToast('Please enter product name first.', 'error');
+    return;
+  }
+  if (!category) {
+    adminToast('Please select a category first.', 'error');
+    return;
+  }
+
+  // Show loading
+  document.getElementById('aiLoadingSpinner').classList.remove('d-none');
+  document.getElementById('btnAiGenerate').disabled = true;
+
+  let imageBase64 = null;
+  let imageMimeType = null;
+
+  // Convert image to base64 if selected
+  if (imageInput.files && imageInput.files[0]) {
+    const file = imageInput.files[0];
+    imageMimeType = file.type;
+    imageBase64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  try {
+    const imageUrl = document.getElementById('imageUrlInput').value.trim();
+    const response = await fetch('/api/ai/generate-product-details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        productName, 
+        category,
+        imageUrl,
+        imageBase64,
+        imageMimeType,
+        userDescription: document.getElementById('description').value.trim()
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.data) {
+      const d = result.data;
+
+      // Auto-fill form fields
+      if (d.description) {
+        document.getElementById('description').value = d.description;
+      }
+      if (d.specifications) {
+        document.getElementById('specifications').value = d.specifications;
+      }
+      if (d.hsnCode) {
+        document.getElementById('hsnCode').value = d.hsnCode;
+      }
+      if (d.gstRate !== undefined) {
+        const gstSelect = document.getElementById('gstRate');
+        if (gstSelect) gstSelect.value = d.gstRate;
+      }
+      if (d.suggestedPrice) {
+        document.getElementById('suggestedPrice').value = d.suggestedPrice;
+      }
+      if (d.metaDescription) {
+        document.getElementById('metaDescription').value = d.metaDescription;
+      }
+
+      if (result.fallback) {
+        adminToast('⚠️ API Offline/Invalid. Loaded offline boilerplate template.', 'warning');
+      } else {
+        adminToast('✅ AI details generated successfully!', 'success');
+      }
+    } else {
+      adminToast('❌ AI generation failed. Fill manually.', 'error');
+    }
+  } catch (err) {
+    console.error('AI Generation Error:', err);
+    adminToast('❌ Network error. Try again.', 'error');
+  } finally {
+    document.getElementById('aiLoadingSpinner').classList.add('d-none');
+    document.getElementById('btnAiGenerate').disabled = false;
+  }
+});
+
+document.getElementById('productForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const fd = new FormData(this);
+  
+  // Collect toggles
+  document.querySelectorAll('[name="featured"],[name="isNew"],[name="isActive"]').forEach(btn => {
+    fd.set(btn.name, btn.classList.contains('on'));
+  });
+  
+  const isEdit = '<%= typeof product !== "undefined" ? product._id : "" %>';
+  const url = isEdit ? `/api/products/${isEdit}` : '/api/products';
+  const method = isEdit ? 'PUT' : 'POST';
+  
+  try {
+    const res = await fetch(url, { method, body: fd });
+    const data = await res.json();
+    if (res.ok) { 
+      adminToast(isEdit ? 'Product updated!' : 'Product added!', 'success'); 
+      if (!isEdit) setTimeout(() => location.href = '/admin/products', 1000); 
+    } else {
+      throw new Error(data.error || data.message);
+    }
+  } catch(err) { 
+    adminToast('Error: ' + err.message, 'error'); 
+  }
+});
+</script>
+
+<%- include('../partials/admin-footer') %>

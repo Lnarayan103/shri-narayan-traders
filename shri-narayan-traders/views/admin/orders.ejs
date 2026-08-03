@@ -1,0 +1,99 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Orders" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">Orders</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Track and manage all customer orders</p>
+    </div>
+    <a href="/admin/orders/new" class="btn-admin-primary"><i class="fa-solid fa-plus"></i> New Order</a>
+  </div>
+
+  <!-- Status tabs -->
+  <div class="status-tabs mb-3">
+    <% ['all','pending','confirmed','processing','shipped','delivered','cancelled','repair','replacement','exchange'].forEach(s=>{ %>
+    <button class="status-tab <%=s==='all'?'active':''%>" onclick="filterByStatus(this, '<%= s %>')"><%= s.charAt(0).toUpperCase()+s.slice(1) %></button>
+    <% }) %>
+  </div>
+
+  <div class="admin-card">
+    <div style="padding:1rem 1.25rem;display:flex;gap:.75rem;flex-wrap:wrap;">
+      <input type="text" id="orderSearch" class="form-control-admin" placeholder="🔍 Search by Order ID or customer name..." style="max-width:320px;" oninput="searchOrders()" />
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table" id="ordersTable">
+        <thead>
+          <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <% if(orders && orders.length > 0) { %>
+          <% orders.forEach(o=>{ %>
+          <tr data-status="<%= o.status %>">
+            <td><code style="font-size:12px;background:var(--cream);padding:3px 7px;border-radius:5px;"><%= o.orderId %></code></td>
+            <td>
+              <div style="font-weight:700;font-size:13px;"><%= o.customerName %></div>
+              <div style="font-size:11px;color:var(--text-muted);"><%= o.customerPhone %></div>
+            </td>
+            <td style="font-size:13px;"><%= o.items ? o.items.length : '—' %> item(s)</td>
+            <td style="font-weight:700;">₹<%= (o.totalAmount||0).toLocaleString('en-IN') %></td>
+            <td><span class="status-badge <%=o.paymentStatus==='paid'?'status-delivered':'status-pending'%>"><%= o.paymentStatus||'pending' %></span></td>
+            <td>
+              <select class="form-control-admin" style="padding:4px 8px;font-size:12px;min-width:120px;" onchange="updateStatus('<%= o._id %>', this.value)">
+                <% ['pending','confirmed','processing','shipped','delivered','cancelled','repair','replacement','exchange'].forEach(s=>{ %>
+                <option value="<%= s %>" <%=o.status===s?'selected':''%>><%= s.charAt(0).toUpperCase()+s.slice(1) %></option>
+                <% }) %>
+              </select>
+            </td>
+            <td style="font-size:12px;"><%= new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) %></td>
+            <td>
+              <div style="display:flex;gap:.35rem;">
+                <a href="/admin/orders/<%= o._id %>" class="btn-admin-xs"><i class="fa-solid fa-eye"></i></a>
+                <button onclick="printInvoice('<%= o._id %>')" class="btn-admin-xs"><i class="fa-solid fa-print"></i></button>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="8" class="text-center py-5 text-muted">No orders yet</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+.status-tabs { display:flex;gap:.4rem;flex-wrap:wrap; }
+.status-tab { background:#fff;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:all .2s ease; }
+.status-tab.active,.status-tab:hover { background:var(--navy-grad);color:#fff;border-color:transparent; }
+</style>
+
+<script>
+function filterByStatus(btn, status) {
+  document.querySelectorAll('.status-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#ordersTable tbody tr[data-status]').forEach(row=>{
+    row.style.display = status==='all' || row.dataset.status===status ? '' : 'none';
+  });
+}
+function searchOrders() {
+  const q = document.getElementById('orderSearch').value.toLowerCase();
+  document.querySelectorAll('#ordersTable tbody tr[data-status]').forEach(row=>{
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+async function updateStatus(id, status) {
+  const res = await fetch(`/api/orders/${id}/status`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({status}) });
+  if (res.ok) {
+    adminToast('Order status updated to: ' + status, 'success');
+  } else {
+    const data = await res.json();
+    adminToast(data.error || 'Failed to update status', 'error');
+    setTimeout(() => window.location.reload(), 1500);
+  }
+}
+function printInvoice(id) { window.open(`/api/orders/${id}/invoice`, '_blank'); }
+</script>
+
+<%- include('../partials/admin-footer') %>
