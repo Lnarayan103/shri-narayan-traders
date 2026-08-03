@@ -372,7 +372,7 @@ router.get('/admin/settings', authenticate, requireAdmin, async (req, res) => {
       settings.openRouterApiKey = process.env.OPENROUTER_API_KEY || '';
     }
     if (!settings.openRouterModel) {
-      settings.openRouterModel = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+      settings.openRouterModel = process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b:free';
     }
     res.render('admin/settings', { settings, pageTitle: 'Store Settings' });
   } catch (err) {

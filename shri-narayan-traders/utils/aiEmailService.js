@@ -23,7 +23,7 @@ function checkAIRateLimit() {
 
 async function getOpenRouterConfig() {
   let apiKey = process.env.OPENROUTER_API_KEY;
-  let model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+  let model = process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b:free';
   
   const config = await db.settings.findOne({ _id: 'global_settings' });
   if (config) {

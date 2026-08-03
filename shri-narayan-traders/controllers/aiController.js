@@ -99,7 +99,7 @@ const generateProductDetails = async (req, res) => {
     }
 
     let apiKey = process.env.OPENROUTER_API_KEY;
-    let apiModel = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+    let apiModel = process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b:free';
     
     // Fallback to database settings key if not present in env
     const config = await db.settings.findOne({ _id: 'global_settings' });

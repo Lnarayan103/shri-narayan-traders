@@ -42,7 +42,7 @@ const getSettings = async (req, res) => {
         config.openRouterApiKey = process.env.OPENROUTER_API_KEY || '';
       }
       if (!config.openRouterModel) {
-        config.openRouterModel = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+        config.openRouterModel = process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b:free';
       }
     }
     return res.json(config);
