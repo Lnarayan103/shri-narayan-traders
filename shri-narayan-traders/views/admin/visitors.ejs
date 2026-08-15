@@ -1,0 +1,129 @@
+<%- include('../partials/admin-header') %>
+<% pageTitle = "Visitor Logs" %>
+
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="font-playfair mb-0">Visitor Tracking Logs</h4>
+      <p class="text-muted mb-0" style="font-size:13px">Monitor real-time website traffic, IP addresses, countries, and page navigation history</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/api/admin/visitors/export" class="btn btn-success fw-bold btn-sm"><i class="fa-solid fa-file-excel me-1"></i> Export to Excel</a>
+      <button class="btn btn-outline-danger fw-bold btn-sm" onclick="clearVisitorLogs()"><i class="fa-solid fa-trash-can me-1"></i> Clear Logs</button>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow-sm border">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle" id="visitorsTable">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>IP Address</th>
+            <th>Location</th>
+            <th>Page Path</th>
+            <th>Browser / Platform</th>
+          </tr>
+        </thead>
+        <tbody id="visitorsBody">
+          <tr>
+            <td colspan="5" class="text-center py-5 text-muted">
+              <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+              Loading visitor records...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchVisitors();
+  });
+
+  async function fetchVisitors() {
+    const tbody = document.getElementById('visitorsBody');
+    try {
+      const response = await fetch('/api/admin/visitors');
+      const visitors = await response.json();
+      
+      if (!response.ok) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-danger text-center py-4">Error: ${visitors.error || 'Failed loading records'}</td></tr>`;
+        return;
+      }
+      
+      if (visitors.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-muted text-center py-5">No visitor logs recorded yet.</td></tr>`;
+        return;
+      }
+      
+      let html = '';
+      visitors.forEach(visitor => {
+        const date = new Date(visitor.createdAt).toLocaleString('en-IN');
+        const flagCode = visitor.country && visitor.country !== 'Unknown' ? visitor.country.toLowerCase() : '';
+        const countryBadge = flagCode 
+          ? `<span class="badge bg-light text-dark border"><img src="https://flagcdn.com/16x12/${flagCode}.png" class="me-1" style="vertical-align:middle;margin-top:-2px;" /> ${visitor.country}</span>`
+          : `<span class="badge bg-light text-muted border">Unknown</span>`;
+        
+        // Simple User-Agent parser for displaying short client name
+        const ua = visitor.userAgent || '';
+        let browserName = 'Browser';
+        let osName = 'Unknown OS';
+        
+        if (ua.includes('Chrome')) browserName = 'Chrome';
+        else if (ua.includes('Safari')) browserName = 'Safari';
+        else if (ua.includes('Firefox')) browserName = 'Firefox';
+        else if (ua.includes('Edge')) browserName = 'Edge';
+        else if (ua.includes('Postman')) browserName = 'Postman';
+        
+        if (ua.includes('Windows')) osName = 'Windows';
+        else if (ua.includes('Android')) osName = 'Android';
+        else if (ua.includes('iPhone') || ua.includes('iPad')) osName = 'iOS';
+        else if (ua.includes('Macintosh')) osName = 'macOS';
+        else if (ua.includes('Linux')) osName = 'Linux';
+
+        html += `
+          <tr>
+            <td class="text-muted small" style="white-space: nowrap;">${date}</td>
+            <td>
+              <strong class="text-dark">${visitor.ip}</strong>
+            </td>
+            <td>${countryBadge}</td>
+            <td>
+              <code class="px-2 py-1 bg-light text-danger rounded border text-break" style="font-size:12px;">${visitor.path}</code>
+            </td>
+            <td class="text-secondary small">
+              <span class="d-inline-flex align-items-center gap-1">
+                <i class="fa-solid fa-laptop-code text-muted"></i> ${browserName} (${osName})
+              </span>
+              <span class="text-muted d-block" style="font-size: 10px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${ua}">${ua}</span>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-danger text-center py-4">Network error loading visitor logs.</td></tr>`;
+    }
+  }
+
+  async function clearVisitorLogs() {
+    if (!confirm('Are you absolutely sure you want to delete all visitor logs? This action is permanent.')) return;
+    try {
+      const response = await fetch('/api/admin/visitors', { method: 'DELETE' });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || 'Visitor logs cleared successfully.');
+        fetchVisitors();
+      } else {
+        alert(result.error || 'Permission denied.');
+      }
+    } catch(err) {
+      alert('Error connecting to api server.');
+    }
+  }
+</script>
+
+<%- include('../partials/admin-footer') %>

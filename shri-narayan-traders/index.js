@@ -33,6 +33,35 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
+// Visitor Logging Middleware
+app.use(async (req, res, next) => {
+  const path = req.path;
+  const isStatic = path.startsWith('/css') || path.startsWith('/js') || path.startsWith('/images') || path.startsWith('/uploads') || path.includes('.') || path.startsWith('/favicon.ico');
+  const isApiOrHealth = path.startsWith('/api') || path.startsWith('/health');
+  
+  if (!isStatic && !isApiOrHealth) {
+    try {
+      const db = require('./config/db');
+      const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+      const country = req.headers['cf-ipcountry'] || 'Unknown';
+      const userAgent = req.headers['user-agent'] || '';
+      
+      if (db.visitor_logs) {
+        await db.visitor_logs.insert({
+          ip,
+          country,
+          path,
+          userAgent,
+          createdAt: new Date()
+        });
+      }
+    } catch (e) {
+      console.warn('⚠️ Visitor log error:', e.message);
+    }
+  }
+  next();
+});
+
 // Load dynamic website settings globally
 app.use(loadSettings);
 

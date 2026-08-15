@@ -2,12 +2,17 @@
 <% pageTitle = "Products" %>
 
 <div class="admin-content">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
       <h4 class="font-playfair mb-0">Products</h4>
       <p class="text-muted mb-0" style="font-size:13px">Manage your product catalog</p>
     </div>
-    <a href="/admin/products/add" class="btn-admin-primary"><i class="fa-solid fa-plus"></i> Add Product</a>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <a href="/api/products/export-csv" class="btn btn-outline-success btn-sm fw-bold"><i class="fa-solid fa-file-excel me-1"></i> Export to Excel</a>
+      <button onclick="document.getElementById('csvFileInput').click()" class="btn btn-success btn-sm fw-bold"><i class="fa-solid fa-file-import me-1"></i> Import from Excel</button>
+      <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="importCSVFile(this)" />
+      <a href="/admin/products/add" class="btn-admin-primary" style="padding:.4rem .9rem;font-size:13.5px;"><i class="fa-solid fa-plus"></i> Add Product</a>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -131,6 +136,33 @@ async function deleteProduct(id, btn) {
   const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
   if (res.ok) { btn.closest('tr').remove(); adminToast('Product deleted', 'success'); }
   else adminToast('Failed to delete', 'error');
+}
+
+async function importCSVFile(input) {
+  if (!input.files || input.files.length === 0) return;
+  const file = input.files[0];
+  
+  const formData = new FormData();
+  formData.append('csv', file);
+  
+  adminToast('Uploading and parsing CSV...', 'info');
+  
+  try {
+    const res = await fetch('/api/products/import-csv', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await res.json();
+    if (res.ok) {
+      adminToast(result.message || 'Products imported successfully!', 'success');
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      adminToast(result.error || 'Failed to import CSV file.', 'error');
+    }
+  } catch (err) {
+    adminToast('Network error uploading CSV.', 'error');
+  }
+  input.value = '';
 }
 </script>
 

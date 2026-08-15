@@ -403,6 +403,10 @@ router.get('/admin/logs', authenticate, requireAdmin, checkRole(['admin', 'super
   res.render('admin/logs', { pageTitle: 'Activity Logs' });
 });
 
+router.get('/admin/visitors', authenticate, requireAdmin, checkRole(['admin', 'super-admin']), (req, res) => {
+  res.render('admin/visitors', { pageTitle: 'Visitor Logs' });
+});
+
 router.get('/admin/staff', authenticate, requireAdmin, checkRole(['admin', 'super-admin']), (req, res) => {
   res.render('admin/staff', { pageTitle: 'Manage Staff' });
 });

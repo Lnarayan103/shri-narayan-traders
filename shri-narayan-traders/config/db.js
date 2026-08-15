@@ -22,7 +22,7 @@ const dbPath = (filename) => path.join(dataDir, filename);
 const COLLECTION_NAMES = [
   'users', 'otps', 'products', 'orders', 'enquiries', 'offers', 'gallery', 'stats',
   'settings', 'reviews', 'logs', 'quotations', 'suppliers', 'purchases',
-  'expenses', 'jobworks', 'deliveries', 'attendance'
+  'expenses', 'jobworks', 'deliveries', 'attendance', 'visitor_logs'
 ];
 
 const localDb = {};

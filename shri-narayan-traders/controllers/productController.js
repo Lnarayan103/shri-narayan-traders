@@ -346,10 +346,242 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const parseCsv = (csvText) => {
+  const lines = [];
+  let currentLine = [];
+  let currentVal = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      currentLine.push(currentVal.trim());
+      currentVal = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && csvText[i + 1] === '\n') i++;
+      currentLine.push(currentVal.trim());
+      if (currentLine.length > 0 && (currentLine.length > 1 || currentLine[0] !== '')) {
+        lines.push(currentLine);
+      }
+      currentLine = [];
+      currentVal = '';
+    } else {
+      currentVal += char;
+    }
+  }
+  if (currentVal !== '') {
+    currentLine.push(currentVal.trim());
+  }
+  if (currentLine.length > 0) {
+    lines.push(currentLine);
+  }
+  return lines;
+};
+
+const exportProductsCSV = async (req, res) => {
+  try {
+    const products = await db.products.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 });
+    let csv = '\uFEFFProduct ID,Product Name,Category,Brand,Description,Regular Price,Wholesale Price,Original Price,Stock,Unit,GST Rate,HSN Code,Low Stock Threshold,Specifications,Suggested Price,Meta Description,Featured,New,Active\n';
+    
+    products.forEach(p => {
+      const id = String(p._id || '');
+      const name = (p.name || '').replace(/"/g, '""');
+      const category = (p.category || '').replace(/"/g, '""');
+      const brand = (p.brand || '').replace(/"/g, '""');
+      const desc = (p.description || '').replace(/"/g, '""');
+      const regularPrice = p.regularPrice ?? p.price ?? 0;
+      const wholesalePrice = p.wholesalePrice ?? p.dealerPrice ?? 0;
+      const originalPrice = p.originalPrice ?? '';
+      const stock = p.stock ?? 0;
+      const unit = p.unit || 'Piece';
+      const gstRate = p.gstRate ?? 18;
+      const hsnCode = p.hsnCode || '';
+      const lowStock = p.lowStockThreshold ?? 10;
+      const specs = (p.specifications || '').replace(/"/g, '""');
+      const suggested = (p.suggestedPrice || '').replace(/"/g, '""');
+      const meta = (p.metaDescription || '').replace(/"/g, '""');
+      const featured = p.featured ? 'TRUE' : 'FALSE';
+      const isNew = p.isNew ? 'TRUE' : 'FALSE';
+      const isActive = p.isActive !== false ? 'TRUE' : 'FALSE';
+      
+      csv += `"${id}","${name}","${category}","${brand}","${desc}",${regularPrice},${wholesalePrice},${originalPrice},${stock},"${unit}",${gstRate},"${hsnCode}",${lowStock},"${specs}","${suggested}","${meta}",${featured},${isNew},${isActive}\n`;
+    });
+    
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=snt_products.csv');
+    return res.send(csv);
+  } catch (error) {
+    console.error('Error exporting products CSV:', error);
+    return res.status(500).send('Server error during CSV export');
+  }
+};
+
+const importProductsCSV = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Please upload a CSV file' });
+    }
+    
+    const csvPath = req.file.path;
+    const csvContent = fs.readFileSync(csvPath, 'utf8');
+    
+    const rows = parseCsv(csvContent);
+    if (rows.length < 2) {
+      fs.unlinkSync(csvPath);
+      return res.status(400).json({ error: 'Invalid CSV: No data rows found' });
+    }
+    
+    const headers = rows[0].map(h => h.toLowerCase().trim().replace(/^\uFEFF/, ''));
+    
+    const colIdx = (name) => headers.indexOf(name.toLowerCase());
+    
+    const idxId = colIdx('product id');
+    const idxName = colIdx('product name');
+    const idxCategory = colIdx('category');
+    const idxBrand = colIdx('brand');
+    const idxDesc = colIdx('description');
+    const idxRegPrice = colIdx('regular price');
+    const idxPrice = colIdx('price');
+    const idxWholePrice = colIdx('wholesale price');
+    const idxDealerPrice = colIdx('dealer price');
+    const idxOrigPrice = colIdx('original price');
+    const idxStock = colIdx('stock');
+    const idxUnit = colIdx('unit');
+    const idxGst = colIdx('gst rate');
+    const idxHsn = colIdx('hsn code');
+    const idxLowStock = colIdx('low stock threshold');
+    const idxSpecs = colIdx('specifications');
+    const idxSuggested = colIdx('suggested price');
+    const idxMeta = colIdx('meta description');
+    const idxFeatured = colIdx('featured');
+    const idxNew = colIdx('new');
+    const idxActive = colIdx('active');
+    
+    if (idxName === -1 || idxCategory === -1 || idxStock === -1) {
+      fs.unlinkSync(csvPath);
+      return res.status(400).json({ error: 'CSV must contain at least Product Name, Category, and Stock columns' });
+    }
+    
+    let createdCount = 0;
+    let updatedCount = 0;
+    
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || row.length === 0 || (row.length === 1 && row[0] === '')) continue;
+      
+      const val = (idx) => idx !== -1 && idx < row.length ? row[idx].trim() : '';
+      
+      const id = val(idxId);
+      const name = val(idxName);
+      if (!name) continue;
+      
+      const category = val(idxCategory) || 'General';
+      const brand = val(idxBrand);
+      const description = val(idxDesc);
+      
+      const rawRegPrice = val(idxRegPrice) || val(idxPrice) || '0';
+      const regularPrice = parseFloat(rawRegPrice) || 0;
+      
+      const rawWholePrice = val(idxWholePrice) || val(idxDealerPrice) || '0';
+      const wholesalePrice = parseFloat(rawWholePrice) || 0;
+      
+      const rawOrigPrice = val(idxOrigPrice);
+      const originalPrice = rawOrigPrice ? (parseFloat(rawOrigPrice) || null) : null;
+      
+      const stock = parseInt(val(idxStock)) || 0;
+      const unit = val(idxUnit) || 'Piece';
+      const gstRate = parseInt(val(idxGst)) || 18;
+      const hsnCode = val(idxHsn);
+      const lowStockThreshold = parseInt(val(idxLowStock)) || 10;
+      
+      const specifications = val(idxSpecs);
+      const suggestedPrice = val(idxSuggested);
+      const metaDescription = val(idxMeta);
+      
+      const featured = ['true', 'yes', '1', 'y'].includes(val(idxFeatured).toLowerCase());
+      const isNew = ['true', 'yes', '1', 'y'].includes(val(idxNew).toLowerCase());
+      const isActive = val(idxActive) === '' || ['true', 'yes', '1', 'y', 'active'].includes(val(idxActive).toLowerCase());
+      
+      let match = null;
+      if (id) {
+        try {
+          match = await db.products.findOne({ _id: id });
+        } catch (e) {}
+      }
+      if (!match) {
+        try {
+          match = await db.products.findOne({ name: new RegExp('^' + name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i'), isDeleted: { $ne: true } });
+        } catch (e) {}
+      }
+      
+      const pDoc = {
+        name,
+        category,
+        brand: brand || '',
+        description: description || '',
+        regularPrice,
+        price: regularPrice,
+        wholesalePrice,
+        dealerPrice: wholesalePrice,
+        originalPrice,
+        stock,
+        unit,
+        gstRate,
+        hsnCode: hsnCode || '',
+        lowStockThreshold,
+        specifications: specifications || '',
+        suggestedPrice: suggestedPrice || '',
+        metaDescription: metaDescription || '',
+        featured,
+        isNew,
+        isActive,
+        updatedAt: new Date()
+      };
+      
+      if (match) {
+        await db.products.update({ _id: match._id }, { $set: pDoc });
+        updatedCount++;
+      } else {
+        pDoc.image = '';
+        pDoc.createdAt = new Date();
+        await db.products.insert(pDoc);
+        createdCount++;
+      }
+    }
+    
+    fs.unlinkSync(csvPath);
+    
+    await logActivity(
+      req.user.id,
+      req.user.username,
+      'Product Import',
+      `Imported products CSV successfully: ${createdCount} created, ${updatedCount} updated`
+    );
+    
+    return res.json({
+      success: true,
+      message: `Product import successful!`,
+      details: `${createdCount} new products created, ${updatedCount} existing products updated.`
+    });
+  } catch (error) {
+    console.error('Error importing products CSV:', error);
+    try {
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    } catch(e) {}
+    return res.status(500).json({ error: 'Server error during CSV import: ' + error.message });
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  exportProductsCSV,
+  importProductsCSV
 };

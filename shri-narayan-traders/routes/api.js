@@ -34,6 +34,8 @@ router.get('/auth/me', authenticate, authController.getMe);
 router.put('/auth/profile', authenticate, requireCustomer, authController.updateProfile);
 
 // Products API
+router.get('/products/export-csv', authenticate, requireAdmin, productController.exportProductsCSV);
+router.post('/products/import-csv', authenticate, requireAdmin, upload.single('csv'), productController.importProductsCSV);
 router.get('/products', productController.getProducts);
 router.get('/products/:id', productController.getProductById);
 router.post('/products', authenticate, requireAdmin, checkRole(['admin', 'super-admin', 'manager']), upload.single('image'), productController.createProduct);
@@ -93,6 +95,11 @@ router.delete('/reviews/:id', authenticate, requireAdmin, checkRole(['admin', 's
 // Admin stats & customers
 router.get('/admin/stats', authenticate, requireAdmin, adminController.getStats);
 router.get('/admin/customers', authenticate, requireAdmin, checkRole(['admin', 'super-admin', 'manager']), adminController.getCustomers);
+
+// Visitor Tracking APIs
+router.get('/admin/visitors', authenticate, requireAdmin, checkRole(['admin', 'super-admin']), adminController.getVisitors);
+router.get('/admin/visitors/export', authenticate, requireAdmin, checkRole(['admin', 'super-admin']), adminController.exportVisitors);
+router.delete('/admin/visitors', authenticate, requireAdmin, checkRole(['admin', 'super-admin']), adminController.clearVisitors);
 
 // System Administration APIs
 router.get('/system/logs', authenticate, requireAdmin, checkRole(['admin', 'super-admin']), systemController.getLogs);
