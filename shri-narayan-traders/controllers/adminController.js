@@ -85,9 +85,17 @@ const exportVisitors = async (req, res) => {
 
 const clearVisitors = async (req, res) => {
   try {
-    await db.visitor_logs.remove({}, { multi: true });
-    await logActivity(req.user.id, req.user.username || 'admin', 'Clear Visitor Logs', 'Deleted all visitor traffic logs');
-    return res.json({ success: true, message: 'All visitor logs cleared successfully' });
+    const threeMonthsAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const result = await db.visitor_logs.remove({ createdAt: { $lt: threeMonthsAgo } }, { multi: true });
+    const count = typeof result === 'number' ? result : (result?.deletedCount ?? 'Some');
+    
+    await logActivity(
+      req.user.id,
+      req.user.username || 'admin',
+      'Clear Visitor Logs',
+      `Deleted ${count} visitor logs older than 3 months. Recent visitor logs are preserved.`
+    );
+    return res.json({ success: true, message: `Cleared visitor logs older than 3 months (${count} entries removed). Recent logs are preserved.` });
   } catch (error) {
     console.error('Error clearing visitor logs:', error);
     return res.status(500).json({ error: 'Server error' });

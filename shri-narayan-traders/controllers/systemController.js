@@ -16,9 +16,17 @@ const getLogs = async (req, res) => {
 
 const clearLogs = async (req, res) => {
   try {
-    await db.logs.remove({}, { multi: true });
-    await logActivity(req.user.id, req.user.username, 'Logs Cleared', 'All activity audit logs deleted by super-admin.');
-    return res.json({ message: 'Audit logs cleared successfully.' });
+    const threeMonthsAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const result = await db.logs.remove({ createdAt: { $lt: threeMonthsAgo } }, { multi: true });
+    const count = typeof result === 'number' ? result : (result?.deletedCount ?? 'Some');
+    
+    await logActivity(
+      req.user.id,
+      req.user.username,
+      'Logs Cleared',
+      `Cleared ${count} activity audit logs older than 3 months. Recent logs are preserved.`
+    );
+    return res.json({ message: `Cleared activity logs older than 3 months (${count} entries removed). Recent logs are preserved.` });
   } catch (error) {
     console.error('Error clearing logs:', error);
     return res.status(500).json({ error: 'Server error' });
