@@ -53,14 +53,19 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && proce
 }
 
 const fileFilter = (req, file, cb) => {
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (ext === '.csv') {
+    return cb(null, true);
+  }
+
   const allowedTypes = /jpeg|jpg|png|webp|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = allowedTypes.test(ext);
   const mimetype = allowedTypes.test(file.mimetype);
   
   if (extname && mimetype) {
     return cb(null, true);
   } else {
-    cb(new Error('Only images are allowed!'));
+    cb(new Error('Only images and CSV files are allowed!'));
   }
 };
 
