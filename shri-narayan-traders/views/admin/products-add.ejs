@@ -28,7 +28,7 @@
                 <label class="form-label-admin">Category *</label>
                 <select id="category" name="category" class="form-control-admin" required>
                   <option value="">Select category...</option>
-                  <% ['Hardware','Furniture','Office Furniture','Aluminium Doors','Aluminium Windows','Tools','Electrical','Plumbing','Other'].forEach(c=>{ %>
+                  <% ['Hardware','Furniture','Office Furniture','Aluminium Doors','Aluminium Windows','Other'].forEach(c=>{ %>
                   <option value="<%= c %>" <%= typeof product !== 'undefined' && product.category && product.category.trim().toLowerCase()===c.trim().toLowerCase() ? 'selected' : '' %>><%= c %></option>
                   <% }) %>
                 </select>

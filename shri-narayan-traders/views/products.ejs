@@ -28,7 +28,7 @@
             <div class="mb-3"><label class="form-label-admin">Category</label>
               <div id="catFilters" style="display:flex;flex-direction:column;gap:.4rem;">
                 <label class="filter-check"><input type="radio" name="cat" value="" checked onchange="applyFilters()"> All Categories</label>
-                <% ['Hardware','Furniture','Office Furniture','Aluminium Doors','Aluminium Windows','Tools','Electrical','Plumbing'].forEach(c=>{ %>
+                <% ['Hardware','Furniture','Office Furniture','Aluminium Doors','Aluminium Windows'].forEach(c=>{ %>
                 <label class="filter-check"><input type="radio" name="cat" value="<%= c %>" onchange="applyFilters()"> <%= c %></label>
                 <% }) %>
               </div>
