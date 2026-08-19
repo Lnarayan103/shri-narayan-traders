@@ -2,7 +2,14 @@ const Datastore = require('nedb-promises');
 const path = require('path');
 const fs = require('fs');
 
-const MONGODB_URI = (process.env.MONGODB_URI || '').trim().replace(/^"|"$/g, '');
+let MONGODB_URI = (process.env.MONGODB_URI || '').trim().replace(/^"|"$/g, '');
+if (MONGODB_URI) {
+  if (fs.existsSync('/.dockerenv')) {
+    MONGODB_URI = MONGODB_URI.replace('localhost', 'mongodb').replace('127.0.0.1', 'mongodb');
+  } else {
+    MONGODB_URI = MONGODB_URI.replace('mongodb://mongodb:', 'mongodb://localhost:');
+  }
+}
 const FORCE_NEDB = process.env.FORCE_NEDB === 'true' || process.env.USE_NEDB === 'true';
 
 // On Vercel serverless environment, the filesystem is read-only except for /tmp
