@@ -4,7 +4,7 @@ const fs = require('fs');
 
 let MONGODB_URI = (process.env.MONGODB_URI || '').trim().replace(/^"|"$/g, '');
 if (MONGODB_URI) {
-  if (fs.existsSync('/.dockerenv')) {
+  if (process.env.IS_DOCKER === 'true' || fs.existsSync('/.dockerenv')) {
     MONGODB_URI = MONGODB_URI.replace('localhost', 'mongodb').replace('127.0.0.1', 'mongodb');
   } else {
     MONGODB_URI = MONGODB_URI.replace('mongodb://mongodb:', 'mongodb://localhost:');
